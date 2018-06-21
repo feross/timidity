@@ -1,4 +1,5 @@
 #!/bin/sh
+# Compile the libtimidity C codebase to JavaScript with emscripten
 set -e
 
 BUILD_FLAGS="-s STRICT=1 -s ALLOW_MEMORY_GROWTH=1"
