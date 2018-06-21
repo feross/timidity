@@ -16,11 +16,11 @@
     "url": "https://github.com/feross/timidity/issues"
   },
   "dependencies": {
+    "brfs": "^1.6.1",
     "freepats": "^1.0.1"
   },
   "devDependencies": {
     "babel-minify": "^0.4.3",
-    "brfs": "^1.6.1",
     "browserify": "^16.2.2",
     "standard": "*"
   },
