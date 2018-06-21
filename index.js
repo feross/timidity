@@ -3,7 +3,7 @@ const fs = require('fs')
 
 // Inlined at build time by 'brfs' browserify transform
 const TIMIDITY_CFG = fs.readFileSync(
-  __dirname + 'freepats.cfg', // eslint-disable-line no-path-concat
+  __dirname + '/freepats.cfg', // eslint-disable-line no-path-concat
   'utf8'
 )
 
