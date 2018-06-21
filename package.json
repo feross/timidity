@@ -34,7 +34,11 @@
     "midi file",
     "midi player",
     "player",
-    "timidity"
+    "timidity",
+    "browser",
+    "web audio",
+    "webassembly",
+    "soundfont"
   ],
   "license": "-",
   "main": "index.js",
