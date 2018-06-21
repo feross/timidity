@@ -257,6 +257,10 @@ struct _MidSong
   sint32 at;
   sint32 groomed_event_count;
   char *meta_data[MID_META_MAX];
+  // Added for JavaScript port
+  int load_request_count;
+  // Added for JavaScript port
+  char *load_requests[128];
 };
 
 #endif /* TIMIDITY_INTERNAL_H */

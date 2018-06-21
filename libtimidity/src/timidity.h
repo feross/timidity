@@ -265,6 +265,26 @@ extern "C" {
  */
   TIMI_EXPORT extern void mid_song_free (MidSong *song);
 
+// Added for JavaScript port
+/* Create a MidSongOptions instance on the heap.
+ * The caller is responsible for freeing it using free() later.
+ */
+  TIMI_EXPORT extern MidSongOptions *mid_alloc_options (sint32 rate,
+                                                        uint16 format,
+                                                        uint8 channels,
+                                                        uint16 buffer_size);
+
+// Added for JavaScript port
+/* Return the amount of patch files that the song requires.
+ */
+  TIMI_EXPORT extern int mid_get_load_request_count (MidSong *song);
+
+// Added for JavaScript port
+/* Return the name of a patch file that the song requires.
+ */
+  TIMI_EXPORT extern char *mid_get_load_request (MidSong *song,
+                                                 int index);
+
 #ifdef __cplusplus
 }
 #endif

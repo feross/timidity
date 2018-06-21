@@ -203,6 +203,19 @@ static void load_instrument(MidSong *song, const char *name,
   if (song->ifp == NULL)
     {
       DEBUG_MSG("Instrument `%s' can't be found.\n", name);
+
+      // Added for JavaScript port
+      if (song->load_request_count < 128) {
+        for (i=0; i < song->load_request_count; i++) {
+          if (strcmp(song->load_requests[i], name) == 0) {
+            return; // Already added this instrument, so return
+          }
+        }
+        // Add instrument to load request list
+        song->load_requests[song->load_request_count] = strdup(name);
+        song->load_request_count += 1;
+      }
+
       return;
     }
   fp = song->ifp;
