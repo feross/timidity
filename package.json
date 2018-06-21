@@ -1,6 +1,6 @@
 {
   "name": "timidity",
-  "description": "Play MIDI files in the browser (powered by libtimidity)",
+  "description": "Play MIDI files in the browser w/ Web Audio, WebAssembly, and libtimidity",
   "version": "0.0.0",
   "author": {
     "name": "Feross Aboukhadijeh",
