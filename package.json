@@ -19,21 +19,22 @@
     "freepats": "^1.0.1"
   },
   "devDependencies": {
+    "babel-minify": "^0.4.3",
     "brfs": "^1.6.1",
     "browserify": "^16.2.2",
     "standard": "*"
   },
   "homepage": "https://bitmidi.com",
   "keywords": [
+    "api",
+    "libtimidity",
+    "mid file",
     "midi",
+    "midi api",
+    "midi file",
     "midi player",
     "player",
-    "api",
-    "midi api",
-    "timidity",
-    "libtimidity",
-    "midi file",
-    "mid file"
+    "timidity"
   ],
   "license": "-",
   "main": "index.js",
@@ -42,7 +43,9 @@
     "url": "git://github.com/feross/timidity.git"
   },
   "scripts": {
-    "build": "./tools/build-libtimidity.sh",
+    "build": "./tools/build.sh",
+    "download": "./tools/download.sh",
+    "size": "npm run build && browserify . | minify | gzip | wc -c",
     "test": "standard"
   },
   "standard": {
