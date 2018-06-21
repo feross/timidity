@@ -21,14 +21,17 @@ class Timidity extends EventEmitter {
     this.destroyed = false
 
     this._baseUrl = new URL(baseUrl, window.location.origin).href
+    if (!this._baseUrl.endsWith('/')) this._baseUrl += '/'
 
     this._ready = false
     this._pendingFetches = {} // instrument -> fetch
     this._songPtr = null
     this._bufferPtr = null
 
-    this._lib = LibTimidity()
-    this._lib.then(() => setTimeout(() => this._onLibReady(), 1))
+    this._lib = LibTimidity({
+      locateFile: file => new URL(file, this._baseUrl).href,
+      onRuntimeInitialized: () => this._onLibReady()
+    })
 
     // player.on('playing', () => {})
     // player.on('paused', () => {})
