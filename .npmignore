@@ -1,0 +1,5 @@
+.travis.yml
+exports.json
+exports-runtime.json
+libtimidity/
+tools/
