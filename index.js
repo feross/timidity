@@ -275,9 +275,6 @@ class Timidity extends EventEmitter {
     return this.currentTime / this.duration
   }
 
-  // Render some of the MIDI
-  // Expects an array view with a data type matching the format
-  // (e.g. Int16Array for s16, or Uint8Array for u8)
   _readMidiData () {
     const byteCount = this._lib._mid_song_read_wave(
       this._songPtr,
