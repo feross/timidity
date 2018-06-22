@@ -15,6 +15,9 @@ const NUM_CHANNELS = 2 // stereo (2 channels)
 const BYTES_PER_SAMPLE = 2 * NUM_CHANNELS
 const BUFFER_SIZE = 8192 // buffer size for each render() call
 
+const AudioContext = typeof window !== 'undefined' &&
+  (window.AudioContext || window.webkitAudioContext)
+
 class Timidity extends EventEmitter {
   constructor (baseUrl = '/') {
     super()
@@ -30,6 +33,11 @@ class Timidity extends EventEmitter {
     this._songPtr = 0
     this._bufferPtr = 0
     this._array = new Int16Array(BUFFER_SIZE * 2)
+
+    // If the Timidity constructor was not invoked inside a user-initiated event
+    // handler, then the AudioContext will be suspended. See:
+    // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+    this._audioContext = new AudioContext()
 
     this._onAudioProcess = this._onAudioProcess.bind(this)
 
@@ -64,13 +72,9 @@ class Timidity extends EventEmitter {
     debug('load %o', midiBuf)
     if (this.destroyed) throw new Error('load() called after destroy()')
 
-    /**
-     * If player.load() was called outside of a user-initiated event handler,
-     * then the AudioContext created here will be suspended. See Chrome's
-     * autoplay policy here:
-     * https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
-     */
-    this._createAudioContext()
+    // If the Timidity constructor was not invoked inside a user-initiated event
+    // handler, then the AudioContext will be suspended. Attempt to resume it.
+    this._audioContext.resume()
 
     if (!this._ready) return this.once('_ready', () => this.load(midiBuf))
 
@@ -131,11 +135,6 @@ class Timidity extends EventEmitter {
       missingInstruments.push(instrument)
     }
     return missingInstruments
-  }
-
-  _createAudioContext () {
-    const AudioContext = window.AudioContext || window.webkitAudioContext
-    this._audioContext = new AudioContext()
   }
 
   _loadSong (midiBuf) {
@@ -225,13 +224,8 @@ class Timidity extends EventEmitter {
     debug('play')
     if (this.destroyed) throw new Error('play() called after destroy()')
 
-    /**
-     * If player.load() was called outside of a user-initiated event handler,
-     * then the AudioContext will be suspended. However, player.play() (this
-     * method) is likely to be called from a user-initiated event handler, so
-     * try to resume the AudioContext here. See Chrome's autoplay policy here:
-     * https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
-     */
+    // If the Timidity constructor was not invoked inside a user-initiated event
+    // handler, then the AudioContext will be suspended. Attempt to resume it.
     this._audioContext.resume()
 
     this._playing = true
