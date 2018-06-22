@@ -59,19 +59,19 @@ class Timidity extends EventEmitter {
     this.emit('_ready')
   }
 
-  async load (buf) {
-    debug('load %o', buf)
+  async load (midiBuf) {
+    debug('load %o', midiBuf)
     if (this.destroyed) throw new Error('load() called after destroy()')
 
-    if (!this._ready) return this.on('_ready', () => this.load(buf))
-    if (typeof buf === 'string') {
-      const url = new URL(buf, this._baseUrl)
+    if (!this._ready) return this.on('_ready', () => this.load(midiBuf))
+    if (typeof midiBuf === 'string') {
+      const url = new URL(midiBuf, this._baseUrl)
       this._fetch(url)
-        .then(buf => this.load(buf), err => this._destroy(err))
+        .then(midiBuf => this.load(midiBuf), err => this._destroy(err))
       return
     }
-    if (!(buf instanceof Uint8Array)) {
-      throw new Error('load(buf) expects a Uint8Array')
+    if (!(midiBuf instanceof Uint8Array)) {
+      throw new Error('load(midiBuf) expects a Uint8Array')
     }
 
     // TODO: destroy previous song
