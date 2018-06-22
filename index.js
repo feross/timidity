@@ -263,11 +263,12 @@ class Timidity extends EventEmitter {
   }
 
   get currentTime () {
-    if (this.destroyed) return 0
+    if (this.destroyed || !this._songPtr) return 0
     return this._lib._mid_song_get_time(this._songPtr) / 1000
   }
 
   get duration () {
+    if (this.destroyed || !this._songPtr) return 1
     return this._lib._mid_song_get_total_time(this._songPtr) / 1000
   }
 
