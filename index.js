@@ -64,7 +64,16 @@ class Timidity extends EventEmitter {
     debug('load %o', midiBuf)
     if (this.destroyed) throw new Error('load() called after destroy()')
 
-    if (!this._ready) return this.on('_ready', () => this.load(midiBuf))
+    /**
+     * If player.load() was called outside of a user-initiated event handler,
+     * then the AudioContext created here will be suspended. See Chrome's
+     * autoplay policy here:
+     * https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+     */
+    this._createAudioContext()
+
+    if (!this._ready) return this.once('_ready', () => this.load(midiBuf))
+
     if (typeof midiBuf === 'string') {
       const url = new URL(midiBuf, this._baseUrl)
       this._fetch(url)
@@ -77,13 +86,6 @@ class Timidity extends EventEmitter {
 
     // TODO: destroy previous song
 
-    /**
-     * If player.load() was called outside of a user-initiated event handler,
-     * then the AudioContext created here will be suspended. See Chrome's
-     * autoplay policy here:
-     * https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
-     */
-    this._createAudioContext()
     this._loadSong(buf)
   }
 
