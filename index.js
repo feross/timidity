@@ -1,5 +1,6 @@
 const EventEmitter = require('events').EventEmitter
 const fs = require('fs')
+const LibTimidity = require('./libtimidity')
 
 // Inlined at build time by 'brfs' browserify transform
 const TIMIDITY_CFG = fs.readFileSync(
@@ -16,17 +17,17 @@ const BUFFER_SIZE = 8192 // buffer size for each render() call
 class Timidity extends EventEmitter {
   constructor (baseUrl = '/') {
     super()
-    const LibTimidity = require('./libtimidity')
 
     this.destroyed = false
 
+    if (!baseUrl.endsWith('/')) baseUrl += '/'
     this._baseUrl = new URL(baseUrl, window.location.origin).href
-    if (!this._baseUrl.endsWith('/')) this._baseUrl += '/'
 
     this._ready = false
     this._pendingFetches = {} // instrument -> fetch
     this._songPtr = null
     this._bufferPtr = null
+    this._array = new Int16Array(BUFFER_SIZE * 2)
 
     this._lib = LibTimidity({
       locateFile: file => new URL(file, this._baseUrl).href,
@@ -42,9 +43,10 @@ class Timidity extends EventEmitter {
 
   _onLibReady () {
     this._lib.FS.writeFile('/timidity.cfg', TIMIDITY_CFG)
+
     const result = this._lib._mid_init(0)
     if (result !== 0) {
-      return this._destroy(new Error('Failed to init libtimidity'))
+      return this._destroy(new Error('Failed to initialize libtimidity'))
     }
 
     this._bufferPtr = this._lib._malloc(BUFFER_SIZE * BYTES_PER_SAMPLE)
@@ -65,6 +67,16 @@ class Timidity extends EventEmitter {
       throw new Error('load(buf) expects a Uint8Array')
     }
 
+    // TODO: destroy previous song
+
+    this._createAudioContext()
+    this._createAudioNode()
+    this._node.connect(this._audioContext.destination)
+
+    this._loadSong(buf)
+  }
+
+  async _loadSong (buf) {
     const optsPtr = this._lib._mid_alloc_options(
       SAMPLE_RATE,
       AUDIO_FORMAT,
@@ -104,7 +116,7 @@ class Timidity extends EventEmitter {
 
       // Retry the song load
       this._lib._mid_song_free(songPtr)
-      return this.load(buf)
+      return this._loadSong(buf)
     }
 
     this._songPtr = songPtr
@@ -165,36 +177,35 @@ class Timidity extends EventEmitter {
   }
 
   _createAudioNode () {
-    const node = this._audioContext.createScriptProcessor(
+    this._node = this._audioContext.createScriptProcessor(
       BUFFER_SIZE,
       0,
       NUM_CHANNELS
     )
-    const array = new Int16Array(BUFFER_SIZE * 2)
+    this._node.addEventListener('audioprocess', event => this._onAudioProcess(event))
+  }
 
-    node.addEventListener('audioprocess', event => {
-      const sampleCount = this._readMidiData(array)
+  _onAudioProcess (event) {
+    const sampleCount = this._readMidiData()
 
-      const output0 = event.outputBuffer.getChannelData(0)
-      const output1 = event.outputBuffer.getChannelData(1)
+    const output0 = event.outputBuffer.getChannelData(0)
+    const output1 = event.outputBuffer.getChannelData(1)
 
-      for (let i = 0; i < sampleCount; i++) {
-        output0[i] = array[i * 2] / 0x7FFF
-        output1[i] = array[i * 2 + 1] / 0x7FFF
-      }
+    for (let i = 0; i < sampleCount; i++) {
+      output0[i] = this._array[i * 2] / 0x7FFF
+      output1[i] = this._array[i * 2 + 1] / 0x7FFF
+    }
 
-      for (let i = sampleCount; i < BUFFER_SIZE; i++) {
-        output0[i] = 0
-        output1[i] = 0
-      }
+    for (let i = sampleCount; i < BUFFER_SIZE; i++) {
+      output0[i] = 0
+      output1[i] = 0
+    }
 
-      if (sampleCount === 0) {
-        this.emit('ended')
-        node.disconnect()
-        this._cleanupSong()
-      }
-    })
-    return node
+    if (sampleCount === 0) {
+      this.emit('ended')
+      this._node.disconnect()
+      this._cleanupSong()
+    }
   }
 
   _cleanupSong () {
@@ -207,7 +218,7 @@ class Timidity extends EventEmitter {
   // Render some of the MIDI
   // Expects an array view with a data type matching the format
   // (e.g. Int16Array for s16, or Uint8Array for u8)
-  _readMidiData (outputArray) {
+  _readMidiData () {
     const byteCount = this._lib._mid_song_read_wave(
       this._songPtr,
       this._bufferPtr,
@@ -220,7 +231,7 @@ class Timidity extends EventEmitter {
       return 0
     }
 
-    outputArray.set(
+    this._array.set(
       this._lib.HEAP16.subarray(this._bufferPtr / 2, (this._bufferPtr + byteCount) / 2)
     )
 
@@ -229,12 +240,7 @@ class Timidity extends EventEmitter {
 
   play () {
     if (!this._ready) return this.on('_load', () => this.play())
-
     this._lib._mid_song_start(this._songPtr)
-
-    if (!this._audioContext) this._createAudioContext()
-    const node = this._createAudioNode()
-    node.connect(this._audioContext.destination)
   }
 
   pause () {
