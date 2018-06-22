@@ -86,7 +86,47 @@ class Timidity extends EventEmitter {
 
     // TODO: destroy previous song
 
-    this._loadSong(buf)
+    let songPtr = this._loadSong(midiBuf)
+
+    // Are we missing instrument files?
+    let missingCount = this._lib._mid_get_load_request_count(songPtr)
+    // Load missing instruments
+    if (missingCount > 0) {
+      let missingInstruments = this._getMissingInstruments(songPtr, missingCount)
+      debug('Fetching instruments: %o', missingInstruments)
+
+      // Wait for all instruments to load
+      await Promise.all(
+        missingInstruments.map(instrument => this._fetchInstrument(instrument))
+      )
+
+      // Retry the song load, now that instruments have been loaded
+      this._lib._mid_song_free(songPtr)
+      songPtr = this._loadSong(midiBuf)
+
+      // Are we STILL missing instrument files? Then our General MIDI soundset
+      // is probably missing instrument files.
+      missingCount = this._lib._mid_get_load_request_count(songPtr)
+
+      // Print out missing instrument names
+      if (missingCount > 0) {
+        missingInstruments = this._getMissingInstruments(songPtr, missingCount)
+        debug('Missing instruments: %o', missingInstruments)
+      }
+    }
+
+    this._songPtr = songPtr
+    this.emit('_load')
+  }
+
+  _getMissingInstruments (songPtr, missingCount) {
+    const missingInstruments = []
+    for (let i = 0; i < missingCount; i++) {
+      const instrumentPtr = this._lib._mid_get_load_request(songPtr, i)
+      const instrument = this._lib.Pointer_stringify(instrumentPtr)
+      missingInstruments.push(instrument)
+    }
+    return missingInstruments
   }
 
   _createAudioContext () {
@@ -94,7 +134,7 @@ class Timidity extends EventEmitter {
     this._audioContext = new AudioContext()
   }
 
-  async _loadSong (buf) {
+  _loadSong (midiBuf) {
     const optsPtr = this._lib._mid_alloc_options(
       SAMPLE_RATE,
       AUDIO_FORMAT,
@@ -103,45 +143,25 @@ class Timidity extends EventEmitter {
     )
 
     // Copy the MIDI buffer into the heap
-    const bufPtr = this._lib._malloc(buf.byteLength)
-    this._lib.HEAPU8.set(buf, bufPtr)
+    const midiBufPtr = this._lib._malloc(midiBuf.byteLength)
+    this._lib.HEAPU8.set(midiBuf, midiBufPtr)
+
+    // Create a stream
+    const iStreamPtr = this._lib._mid_istream_open_mem(midiBufPtr, midiBuf.byteLength)
 
     // Load the song
-    const iStreamPtr = this._lib._mid_istream_open_mem(bufPtr, buf.byteLength)
     const songPtr = this._lib._mid_song_load(iStreamPtr, optsPtr)
 
     // Free resources no longer needed
     this._lib._mid_istream_close(iStreamPtr)
     this._lib._free(optsPtr)
-    this._lib._free(bufPtr)
+    this._lib._free(midiBufPtr)
 
-    if (songPtr === 0) return this._destroy(new Error('Failed to load song'))
-
-    // Are we missing instrument files?
-    const loadRequestCount = this._lib._mid_get_load_request_count(songPtr)
-    const missingInstruments = []
-    for (let i = 0; i < loadRequestCount; i++) {
-      const instrumentPtr = this._lib._mid_get_load_request(songPtr, i)
-      const instrument = this._lib.Pointer_stringify(instrumentPtr)
-      missingInstruments.push(instrument)
+    if (songPtr === 0) {
+      return this._destroy(new Error('Failed to load MIDI file'))
     }
 
-    // Load missing instruments
-    if (missingInstruments.length > 0) {
-      debug('fetching instruments: %o', missingInstruments)
-
-      await Promise.all(
-        missingInstruments.map(instrument => this._fetchInstrument(instrument))
-      )
-
-      // Retry the song load
-      this._lib._mid_song_free(songPtr)
-      return this._loadSong(buf)
-    }
-
-    this._songPtr = songPtr
-
-    this.emit('_load')
+    return songPtr
   }
 
   async _fetchInstrument (instrument) {
