@@ -184,13 +184,18 @@ class Timidity extends EventEmitter {
       mode: 'cors',
       credentials: 'same-origin'
     }
-    const res = await window.fetch(url, opts)
-    return new Uint8Array(await res.arrayBuffer())
+    const response = await window.fetch(url, opts)
+    if (response.status !== 200) throw new Error(`Could not load ${url}`)
+
+    const arrayBuffer = await response.arrayBuffer()
+    const buf = new Uint8Array(arrayBuffer)
+    return buf
   }
 
   play () {
     debug('play')
     if (this.destroyed) throw new Error('play() called after destroy()')
+
     /**
      * If player.load() was called outside of a user-initiated event handler,
      * then the AudioContext will be suspended. However, player.play() (this
