@@ -232,10 +232,11 @@ class Timidity extends EventEmitter {
       output1[i] = 0
     }
 
-    if (sampleCount === 0) {
+    if (this._playing && sampleCount === 0) {
+      // Reached the end of the file
       this.emit('ended')
-      this._node.disconnect()
-      this._cleanupSong()
+      this.seek(0)
+      this.pause()
     }
   }
 
