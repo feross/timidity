@@ -217,7 +217,9 @@ class Timidity extends EventEmitter {
   }
 
   _onAudioProcess (event) {
-    const sampleCount = this._readMidiData()
+    const sampleCount = this._playing
+      ? this._readMidiData()
+      : 0
 
     const output0 = event.outputBuffer.getChannelData(0)
     const output1 = event.outputBuffer.getChannelData(1)
@@ -243,6 +245,8 @@ class Timidity extends EventEmitter {
   pause () {
     debug('pause')
     if (this.destroyed) throw new Error('pause() called after destroy()')
+
+    this._playing = false
     // if (this._ready) this._lib._mid_song_pause(this._songPtr)
     // else this._queueCommand('pause')
   }
