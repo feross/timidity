@@ -200,8 +200,9 @@ class Timidity extends EventEmitter {
      */
     this._audioContext.resume()
 
-    if (!this._ready) return this.on('_load', () => this.play())
+    if (!this._songPtr) return this.once('_load', () => this.play())
 
+    this._playing = true
     this._lib._mid_song_start(this._songPtr)
     this._createAudioNode() // Start the 'onaudioprocess' events flowing
   }
@@ -246,6 +247,8 @@ class Timidity extends EventEmitter {
     debug('pause')
     if (this.destroyed) throw new Error('pause() called after destroy()')
 
+    if (!this._songPtr) return this.once('_load', () => this.pause())
+
     this._playing = false
     // if (this._ready) this._lib._mid_song_pause(this._songPtr)
     // else this._queueCommand('pause')
@@ -254,6 +257,9 @@ class Timidity extends EventEmitter {
   seek (time) {
     debug('seek %d', time)
     if (this.destroyed) throw new Error('seek() called after destroy()')
+
+    if (!this._songPtr) return this.once('_load', () => this.seek(time))
+
     const timeMs = Math.floor(time * 1000)
     this._lib._mid_song_seek(this._songPtr, timeMs)
   }
