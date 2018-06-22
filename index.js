@@ -54,7 +54,7 @@ class Timidity extends EventEmitter {
 
     this._bufferPtr = this._lib._malloc(BUFFER_SIZE * BYTES_PER_SAMPLE)
 
-    debug('libtimidity initialized')
+    debug('Initialized libtimidity')
     this._ready = true
     this.emit('_ready')
   }
@@ -143,13 +143,15 @@ class Timidity extends EventEmitter {
 
   async _fetchInstrument (instrument) {
     if (this._pendingFetches[instrument]) {
+      // If this instrument is already in the process of being fetched, return
+      // the existing promise to prevent duplicate fetches.
       return this._pendingFetches[instrument]
     }
 
     const url = new URL(instrument, this._baseUrl)
     const bufPromise = this._fetch(url)
-
     this._pendingFetches[instrument] = bufPromise
+
     const buf = await bufPromise
     this._writeInstrumentFile(instrument, buf)
 
