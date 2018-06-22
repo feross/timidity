@@ -241,12 +241,14 @@ class Timidity extends EventEmitter {
   }
 
   pause () {
+    debug('pause')
     if (this.destroyed) throw new Error('pause() called after destroy()')
     // if (this._ready) this._lib._mid_song_pause(this._songPtr)
     // else this._queueCommand('pause')
   }
 
   seek (time) {
+    debug('seek %d', time)
     if (this.destroyed) throw new Error('seek() called after destroy()')
     const timeMs = Math.floor(time * 1000)
     this._lib._mid_song_seek(this._songPtr, timeMs)
