@@ -306,18 +306,28 @@ class Timidity extends EventEmitter {
     if (this.destroyed) return
     this.destroyed = true
 
-    this.emit('error', err)
+    this._array = null
 
-    this._cleanupSong()
-    this._lib._free(this._bufferPtr)
-    this._bufferPtr = 0
-  }
-
-  _cleanupSong () {
     if (this._songPtr) {
       this._lib._mid_song_free(this._songPtr)
       this._songPtr = 0
     }
+
+    if (this._bufferPtr) {
+      this._lib._free(this._bufferPtr)
+      this._bufferPtr = 0
+    }
+
+    if (this._node) {
+      this._node.disconnect()
+      this._node.removeEventListener('audioprocess', this._onAudioProcess)
+    }
+
+    if (this._audioContext) {
+      this._audioContext.close()
+    }
+
+    if (err) this.emit('error', err)
   }
 }
 
