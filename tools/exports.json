@@ -13,4 +13,5 @@
 	"_mid_song_get_total_time",
 	"_mid_song_load",
 	"_mid_song_read_wave",
+	"_mid_song_seek",
 	"_mid_song_start"]

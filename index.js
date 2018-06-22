@@ -241,9 +241,11 @@ class Timidity extends EventEmitter {
     // else this._queueCommand('pause')
   }
 
-  stop () {}
-
-  seek () {}
+  seek (time) {
+    if (this.destroyed) throw new Error('seek() called after destroy()')
+    const timeMs = Math.floor(time * 1000)
+    this._lib._mid_song_seek(this._songPtr, timeMs)
+  }
 
   get volume () {}
 
