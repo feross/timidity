@@ -1,3 +1,4 @@
+const debug = require('debug')('timidity')
 const EventEmitter = require('events').EventEmitter
 const fs = require('fs')
 const LibTimidity = require('./libtimidity')
@@ -51,11 +52,13 @@ class Timidity extends EventEmitter {
 
     this._bufferPtr = this._lib._malloc(BUFFER_SIZE * BYTES_PER_SAMPLE)
 
+    debug('libtimidity initialized')
     this._ready = true
     this.emit('_ready')
   }
 
   async load (buf) {
+    debug('load %o', buf)
     if (!this._ready) return this.on('_ready', () => this.load(buf))
     if (typeof buf === 'string') {
       const url = new URL(buf, this._baseUrl)
@@ -69,11 +72,19 @@ class Timidity extends EventEmitter {
 
     // TODO: destroy previous song
 
+    /**
+     * If player.load() was called outside of a user-initiated event handler,
+     * then the AudioContext created here will be suspended. See Chrome's
+     * autoplay policy here:
+     * https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+     */
     this._createAudioContext()
-    this._createAudioNode()
-    this._node.connect(this._audioContext.destination)
-
     this._loadSong(buf)
+  }
+
+  _createAudioContext () {
+    const AudioContext = window.AudioContext || window.webkitAudioContext
+    this._audioContext = new AudioContext()
   }
 
   async _loadSong (buf) {
@@ -110,6 +121,8 @@ class Timidity extends EventEmitter {
 
     // Load missing instruments
     if (missingInstruments.length > 0) {
+      debug('fetching instruments: %o', missingInstruments)
+
       await Promise.all(
         missingInstruments.map(instrument => this._fetchInstrument(instrument))
       )
@@ -171,9 +184,21 @@ class Timidity extends EventEmitter {
     return new Uint8Array(await res.arrayBuffer())
   }
 
-  _createAudioContext () {
-    const AudioContext = window.AudioContext || window.webkitAudioContext
-    this._audioContext = new AudioContext()
+  play () {
+    debug('play')
+    /**
+     * If player.load() was called outside of a user-initiated event handler,
+     * then the AudioContext will be suspended. However, player.play() (this
+     * method) is likely to be called from a user-initiated event handler, so
+     * try to resume the AudioContext here. See Chrome's autoplay policy here:
+     * https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+     */
+    this._audioContext.resume()
+
+    if (!this._ready) return this.on('_load', () => this.play())
+
+    this._lib._mid_song_start(this._songPtr)
+    this._createAudioNode() // Start the 'onaudioprocess' events flowing
   }
 
   _createAudioNode () {
@@ -182,7 +207,10 @@ class Timidity extends EventEmitter {
       0,
       NUM_CHANNELS
     )
-    this._node.addEventListener('audioprocess', event => this._onAudioProcess(event))
+    this._node.addEventListener('audioprocess', event => {
+      this._onAudioProcess(event)
+    })
+    this._node.connect(this._audioContext.destination)
   }
 
   _onAudioProcess (event) {
@@ -206,41 +234,6 @@ class Timidity extends EventEmitter {
       this._node.disconnect()
       this._cleanupSong()
     }
-  }
-
-  _cleanupSong () {
-    if (this._songPtr) {
-      this._lib._mid_song_free(this._songPtr)
-      this._songPtr = 0
-    }
-  }
-
-  // Render some of the MIDI
-  // Expects an array view with a data type matching the format
-  // (e.g. Int16Array for s16, or Uint8Array for u8)
-  _readMidiData () {
-    const byteCount = this._lib._mid_song_read_wave(
-      this._songPtr,
-      this._bufferPtr,
-      BUFFER_SIZE * BYTES_PER_SAMPLE
-    )
-    const sampleCount = byteCount / BYTES_PER_SAMPLE
-
-    // Was anything output? If not, don't bother copying anything
-    if (sampleCount === 0) {
-      return 0
-    }
-
-    this._array.set(
-      this._lib.HEAP16.subarray(this._bufferPtr / 2, (this._bufferPtr + byteCount) / 2)
-    )
-
-    return sampleCount
-  }
-
-  play () {
-    if (!this._ready) return this.on('_load', () => this.play())
-    this._lib._mid_song_start(this._songPtr)
   }
 
   pause () {
@@ -268,6 +261,29 @@ class Timidity extends EventEmitter {
     return this.currentTime / this.duration
   }
 
+  // Render some of the MIDI
+  // Expects an array view with a data type matching the format
+  // (e.g. Int16Array for s16, or Uint8Array for u8)
+  _readMidiData () {
+    const byteCount = this._lib._mid_song_read_wave(
+      this._songPtr,
+      this._bufferPtr,
+      BUFFER_SIZE * BYTES_PER_SAMPLE
+    )
+    const sampleCount = byteCount / BYTES_PER_SAMPLE
+
+    // Was anything output? If not, don't bother copying anything
+    if (sampleCount === 0) {
+      return 0
+    }
+
+    this._array.set(
+      this._lib.HEAP16.subarray(this._bufferPtr / 2, (this._bufferPtr + byteCount) / 2)
+    )
+
+    return sampleCount
+  }
+
   destroy () {
     this._destroy()
   }
@@ -281,6 +297,13 @@ class Timidity extends EventEmitter {
     this._cleanupSong()
     this._lib._free(this._bufferPtr)
     this._bufferPtr = 0
+  }
+
+  _cleanupSong () {
+    if (this._songPtr) {
+      this._lib._mid_song_free(this._songPtr)
+      this._songPtr = 0
+    }
   }
 }
 
