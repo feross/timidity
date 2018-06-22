@@ -59,6 +59,8 @@ class Timidity extends EventEmitter {
 
   async load (buf) {
     debug('load %o', buf)
+    if (this.destroyed) throw new Error('load() called after destroy()')
+
     if (!this._ready) return this.on('_ready', () => this.load(buf))
     if (typeof buf === 'string') {
       const url = new URL(buf, this._baseUrl)
@@ -186,6 +188,7 @@ class Timidity extends EventEmitter {
 
   play () {
     debug('play')
+    if (this.destroyed) throw new Error('play() called after destroy()')
     /**
      * If player.load() was called outside of a user-initiated event handler,
      * then the AudioContext will be suspended. However, player.play() (this
@@ -237,6 +240,7 @@ class Timidity extends EventEmitter {
   }
 
   pause () {
+    if (this.destroyed) throw new Error('pause() called after destroy()')
     // if (this._ready) this._lib._mid_song_pause(this._songPtr)
     // else this._queueCommand('pause')
   }
@@ -247,11 +251,18 @@ class Timidity extends EventEmitter {
     this._lib._mid_song_seek(this._songPtr, timeMs)
   }
 
-  get volume () {}
+  get volume () {
+    if (this.destroyed) return 0
+    // TODO
+  }
 
-  set volume (volume) {}
+  set volume (volume) {
+    if (this.destroyed) return
+    // TODO
+  }
 
   get currentTime () {
+    if (this.destroyed) return 0
     return this._lib._mid_song_get_time(this._songPtr) / 1000
   }
 
@@ -287,6 +298,7 @@ class Timidity extends EventEmitter {
   }
 
   destroy () {
+    if (this.destroyed) throw new Error('destroy() called after destroy()')
     this._destroy()
   }
 
