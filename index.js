@@ -299,6 +299,7 @@ class Timidity extends EventEmitter {
   }
 
   destroy () {
+    debug('destroy')
     if (this.destroyed) throw new Error('destroy() called after destroy()')
     this._destroy()
   }
@@ -329,6 +330,7 @@ class Timidity extends EventEmitter {
     }
 
     if (err) this.emit('error', err)
+    debug('destroyed (err %o)', err)
   }
 }
 
