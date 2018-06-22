@@ -45,7 +45,7 @@ class Timidity extends EventEmitter {
   _onLibReady () {
     this._lib.FS.writeFile('/timidity.cfg', TIMIDITY_CFG)
 
-    const result = this._lib._mid_init(0)
+    const result = this._lib._mid_init('/timidity.cfg')
     if (result !== 0) {
       return this._destroy(new Error('Failed to initialize libtimidity'))
     }
