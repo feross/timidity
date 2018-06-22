@@ -30,6 +30,8 @@ class Timidity extends EventEmitter {
     this._bufferPtr = null
     this._array = new Int16Array(BUFFER_SIZE * 2)
 
+    this._onAudioProcess = this._onAudioProcess.bind(this)
+
     this._lib = LibTimidity({
       locateFile: file => new URL(file, this._baseUrl).href,
       onRuntimeInitialized: () => this._onLibReady()
@@ -210,9 +212,7 @@ class Timidity extends EventEmitter {
       0,
       NUM_CHANNELS
     )
-    this._node.addEventListener('audioprocess', event => {
-      this._onAudioProcess(event)
-    })
+    this._node.addEventListener('audioprocess', this._onAudioProcess)
     this._node.connect(this._audioContext.destination)
   }
 
