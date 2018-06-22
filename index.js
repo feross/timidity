@@ -25,9 +25,10 @@ class Timidity extends EventEmitter {
     this._baseUrl = new URL(baseUrl, window.location.origin).href
 
     this._ready = false
+    this._playing = false
     this._pendingFetches = {} // instrument -> fetch
-    this._songPtr = null
-    this._bufferPtr = null
+    this._songPtr = 0
+    this._bufferPtr = 0
     this._array = new Int16Array(BUFFER_SIZE * 2)
 
     this._onAudioProcess = this._onAudioProcess.bind(this)
