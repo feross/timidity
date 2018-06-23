@@ -1,7 +1,10 @@
-const debug = require('debug')('timidity')
+const Debug = require('debug')
 const EventEmitter = require('events').EventEmitter
 const fs = require('fs')
 const LibTimidity = require('./libtimidity')
+
+const debug = Debug('timidity')
+const debugVerbose = Debug('timidity:verbose')
 
 // Inlined at build time by 'brfs' browserify transform
 const TIMIDITY_CFG = fs.readFileSync(
@@ -242,6 +245,7 @@ class Timidity extends EventEmitter {
   }
 
   _onAudioProcess (event) {
+    debugVerbose('onAudioProcess %d', event.playbackTime.toFixed(2))
     const sampleCount = this._playing
       ? this._readMidiData()
       : 0
