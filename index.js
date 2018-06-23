@@ -271,6 +271,26 @@ class Timidity extends EventEmitter {
     }
   }
 
+  _readMidiData () {
+    const byteCount = this._lib._mid_song_read_wave(
+      this._songPtr,
+      this._bufferPtr,
+      BUFFER_SIZE * BYTES_PER_SAMPLE
+    )
+    const sampleCount = byteCount / BYTES_PER_SAMPLE
+
+    // Was anything output? If not, don't bother copying anything
+    if (sampleCount === 0) {
+      return 0
+    }
+
+    this._array.set(
+      this._lib.HEAP16.subarray(this._bufferPtr / 2, (this._bufferPtr + byteCount) / 2)
+    )
+
+    return sampleCount
+  }
+
   pause () {
     debug('pause')
     if (this.destroyed) throw new Error('pause() called after destroy()')
@@ -310,26 +330,6 @@ class Timidity extends EventEmitter {
 
   get progress () {
     return this.currentTime / this.duration
-  }
-
-  _readMidiData () {
-    const byteCount = this._lib._mid_song_read_wave(
-      this._songPtr,
-      this._bufferPtr,
-      BUFFER_SIZE * BYTES_PER_SAMPLE
-    )
-    const sampleCount = byteCount / BYTES_PER_SAMPLE
-
-    // Was anything output? If not, don't bother copying anything
-    if (sampleCount === 0) {
-      return 0
-    }
-
-    this._array.set(
-      this._lib.HEAP16.subarray(this._bufferPtr / 2, (this._bufferPtr + byteCount) / 2)
-    )
-
-    return sampleCount
   }
 
   destroy () {
