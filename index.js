@@ -42,7 +42,15 @@ class Timidity extends EventEmitter {
     // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
     this._audioContext = new AudioContext()
 
+    // Start the 'onaudioprocess' events flowing
+    this._node = this._audioContext.createScriptProcessor(
+      BUFFER_SIZE,
+      0,
+      NUM_CHANNELS
+    )
     this._onAudioProcess = this._onAudioProcess.bind(this)
+    this._node.addEventListener('audioprocess', this._onAudioProcess)
+    this._node.connect(this._audioContext.destination)
 
     this._lib = LibTimidity({
       locateFile: file => new URL(file, this._baseUrl).href,
@@ -79,10 +87,12 @@ class Timidity extends EventEmitter {
     // handler, then the AudioContext will be suspended. Attempt to resume it.
     this._audioContext.resume()
 
+    // If a song already exists, destroy it before starting a new one
+    if (this._songPtr) this._destroySong()
+
     if (!this._ready) return this.once('_ready', () => this.load(url))
 
     let midiBuf
-
     if (typeof url === 'string') {
       midiBuf = await this._fetch(new URL(url, this._baseUrl))
     } else if (url instanceof Uint8Array) {
@@ -91,16 +101,13 @@ class Timidity extends EventEmitter {
       throw new Error('load() expects a `string` or `Uint8Array` argument')
     }
 
-    // TODO: destroy previous song
-
     let songPtr = this._loadSong(midiBuf)
 
     // Are we missing instrument files?
     let missingCount = this._lib._mid_get_load_request_count(songPtr)
-    // Load missing instruments
     if (missingCount > 0) {
       let missingInstruments = this._getMissingInstruments(songPtr, missingCount)
-      debug('Fetching instruments: %o', missingInstruments)
+      debugVerbose('Fetching instruments: %o', missingInstruments)
 
       // Wait for all instruments to load
       await Promise.all(
@@ -123,11 +130,8 @@ class Timidity extends EventEmitter {
     }
 
     this._songPtr = songPtr
-
     this._lib._mid_song_start(this._songPtr)
-    this._createAudioNode() // Start the 'onaudioprocess' events flowing
-
-    this.emit('_load')
+    debugVerbose('Song and instruments are loaded')
   }
 
   _getMissingInstruments (songPtr, missingCount) {
@@ -234,19 +238,8 @@ class Timidity extends EventEmitter {
     this._playing = true
   }
 
-  _createAudioNode () {
-    this._node = this._audioContext.createScriptProcessor(
-      BUFFER_SIZE,
-      0,
-      NUM_CHANNELS
-    )
-    this._node.addEventListener('audioprocess', this._onAudioProcess)
-    this._node.connect(this._audioContext.destination)
-  }
-
   _onAudioProcess (event) {
-    debugVerbose('onAudioProcess %d', event.playbackTime.toFixed(2))
-    const sampleCount = this._playing
+    const sampleCount = (this._songPtr && this._playing)
       ? this._readMidiData()
       : 0
 
@@ -263,7 +256,7 @@ class Timidity extends EventEmitter {
       output1[i] = 0
     }
 
-    if (this._playing && sampleCount === 0) {
+    if (this._songPtr && this._playing && sampleCount === 0) {
       // Reached the end of the file
       this.emit('ended')
       this.seek(0)
@@ -301,8 +294,7 @@ class Timidity extends EventEmitter {
   seek (time) {
     debug('seek %d', time)
     if (this.destroyed) throw new Error('seek() called after destroy()')
-
-    if (!this._songPtr) return this.once('_load', () => this.seek(time))
+    if (!this._songPtr) return // ignore seek if there is no song loaded yet
 
     const timeMs = Math.floor(time * 1000)
     this._lib._mid_song_seek(this._songPtr, timeMs)
@@ -345,8 +337,7 @@ class Timidity extends EventEmitter {
     this._array = null
 
     if (this._songPtr) {
-      this._lib._mid_song_free(this._songPtr)
-      this._songPtr = 0
+      this._destroySong()
     }
 
     if (this._bufferPtr) {
@@ -365,6 +356,12 @@ class Timidity extends EventEmitter {
 
     if (err) this.emit('error', err)
     debug('destroyed (err %o)', err)
+  }
+
+  _destroySong () {
+    this.pause()
+    this._lib._mid_song_free(this._songPtr)
+    this._songPtr = 0
   }
 }
 
