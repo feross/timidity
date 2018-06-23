@@ -68,24 +68,24 @@ class Timidity extends EventEmitter {
     this.emit('_ready')
   }
 
-  async load (midiBuf) {
-    debug('load %o', midiBuf)
+  async load (url) {
+    debug('load %o', url)
     if (this.destroyed) throw new Error('load() called after destroy()')
 
     // If the Timidity constructor was not invoked inside a user-initiated event
     // handler, then the AudioContext will be suspended. Attempt to resume it.
     this._audioContext.resume()
 
-    if (!this._ready) return this.once('_ready', () => this.load(midiBuf))
+    if (!this._ready) return this.once('_ready', () => this.load(url))
 
-    if (typeof midiBuf === 'string') {
-      const url = new URL(midiBuf, this._baseUrl)
-      this._fetch(url)
-        .then(midiBuf => this.load(midiBuf), err => this._destroy(err))
-      return
-    }
-    if (!(midiBuf instanceof Uint8Array)) {
-      throw new Error('load(midiBuf) expects a Uint8Array')
+    let midiBuf
+
+    if (typeof url === 'string') {
+      midiBuf = await this._fetch(new URL(url, this._baseUrl))
+    } else if (url instanceof Uint8Array) {
+      midiBuf = url
+    } else {
+      throw new Error('load() expects a `string` or `Uint8Array` argument')
     }
 
     // TODO: destroy previous song
