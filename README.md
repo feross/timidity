@@ -15,6 +15,9 @@
 
 Play MIDI files in a browser with a simple API.
 
+**NO OPEN SOURCE LICENSE YET.** If you want to use this, send me an email. I'm still figuring
+out what license to use.
+
 ## Install
 
 ```
@@ -51,6 +54,17 @@ Optionally, provide a `baseUrl` to customize where the player will look for the
 lazy-loaded WebAssembly file `libtimidity.wasm` and the
 [FreePats General MIDI soundset](https://www.npmjs.com/package/freepats) files.
 The default `baseUrl` is `/`.
+
+For example, here is how to mount the necessary files at `/` with the `express`
+server:
+
+```js
+const timidityPath = path.dirname(require.resolve('timidity'))
+app.use('/', express.static(timidityPath))
+
+const freepatsPath = path.dirname(require.resolve('freepats'))
+app.use('/', express.static(freepatsPath))
+```
 
 ### `player.load(urlOrBuf)`
 
@@ -129,7 +143,5 @@ This event fires when a MIDI file is paused.
 This event fires when a MIDI file is loading.
 
 ## License
-
-**NOT OPEN SOURCE**. If you want to use this, send me an email.
 
 Copyright (c) [Feross Aboukhadijeh](https://feross.org).
