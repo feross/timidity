@@ -326,16 +326,6 @@ class Timidity extends EventEmitter {
     this._onTimeupdate()
   }
 
-  get volume () {
-    if (this.destroyed) return 0
-    // TODO
-  }
-
-  set volume (volume) {
-    if (this.destroyed) return
-    // TODO
-  }
-
   get currentTime () {
     if (this.destroyed || !this._songPtr) return 0
     return this._lib._mid_song_get_time(this._songPtr) / 1000
