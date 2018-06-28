@@ -336,10 +336,6 @@ class Timidity extends EventEmitter {
     return this._lib._mid_song_get_total_time(this._songPtr) / 1000
   }
 
-  get progress () {
-    return this.currentTime / this.duration
-  }
-
   /**
    * This event fires when the time indicated by the `currentTime` property
    * has been updated.
