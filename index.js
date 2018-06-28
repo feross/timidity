@@ -79,8 +79,8 @@ class Timidity extends EventEmitter {
     this.emit('_ready')
   }
 
-  async load (url) {
-    debug('load %o', url)
+  async load (urlOrBuf) {
+    debug('load %o', urlOrBuf)
     if (this.destroyed) throw new Error('load() called after destroy()')
 
     // If the Timidity constructor was not invoked inside a user-initiated event
@@ -90,13 +90,19 @@ class Timidity extends EventEmitter {
     // If a song already exists, destroy it before starting a new one
     if (this._songPtr) this._destroySong()
 
-    if (!this._ready) return this.once('_ready', () => this.load(url))
+    if (!this._ready) return this.once('_ready', () => this.load(urlOrBuf))
+
+    // Save the url or buf to load. Allows detection of when a new interleaved
+    // load() starts so we can abort this load.
+    this._currentLoad = urlOrBuf
 
     let midiBuf
-    if (typeof url === 'string') {
-      midiBuf = await this._fetch(new URL(url, this._baseUrl))
-    } else if (url instanceof Uint8Array) {
-      midiBuf = url
+    if (typeof urlOrBuf === 'string') {
+      midiBuf = await this._fetch(new URL(urlOrBuf, this._baseUrl))
+      // If another load() started while awaiting, abort this load
+      if (this._currentLoad !== urlOrBuf) return
+    } else if (urlOrBuf instanceof Uint8Array) {
+      midiBuf = urlOrBuf
     } else {
       throw new Error('load() expects a `string` or `Uint8Array` argument')
     }
@@ -114,6 +120,9 @@ class Timidity extends EventEmitter {
         missingInstruments.map(instrument => this._fetchInstrument(instrument))
       )
 
+      // If another load() started while awaiting, abort this load
+      if (this._currentLoad !== urlOrBuf) return
+
       // Retry the song load, now that instruments have been loaded
       this._lib._mid_song_free(songPtr)
       songPtr = this._loadSong(midiBuf)
@@ -125,7 +134,7 @@ class Timidity extends EventEmitter {
       // Print out missing instrument names
       if (missingCount > 0) {
         missingInstruments = this._getMissingInstruments(songPtr, missingCount)
-        debug('Missing instruments: %o', missingInstruments)
+        debug('Playing with missing instruments: %o', missingInstruments)
       }
     }
 
