@@ -91,9 +91,9 @@ continue playing.
 
 ### `player.duration`
 
-Returns the duration in seconds of the currently playing MIDI file. Note that
-`duration` will return `0` until the file's metadata is loaded, which normally
-happens just before the MIDI file starts playing.
+Returns the duration in seconds (`number`) of the currently playing MIDI file.
+Note that `duration` will return `0` until the file is loaded, which normally
+happens just before the `playing` event.
 
 ### `player.currentTime`
 
@@ -108,9 +108,10 @@ Note: It's best to reuse the same player instance for as long as possible. It is
 not recommended to call `player.destroy()` to stop or change MIDI files. Rather,
 just call `player.pause()` to pause or `player.load()` to load a new MIDI file.
 
-### `player.destroyed` (boolean)
+### `player.destroyed`
 
-Returns `true` if `destroy()` has been called on the player.
+Returns `true` if `destroy()` has been called on the player. Returns `false`
+otherwise.
 
 ### `player.on('error', (err) => {})`
 
