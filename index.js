@@ -36,6 +36,11 @@ class Timidity extends EventEmitter {
     this._songPtr = 0
     this._bufferPtr = 0
     this._array = new Int16Array(BUFFER_SIZE * 2)
+    this._currentUrlOrBuf = null // currently loading url or buf
+    this._interval = null
+
+    this._startInterval = this._startInterval.bind(this)
+    this._stopInterval = this._stopInterval.bind(this)
 
     // If the Timidity constructor was not invoked inside a user-initiated event
     // handler, then the AudioContext will be suspended. See:
@@ -56,12 +61,6 @@ class Timidity extends EventEmitter {
       locateFile: file => new URL(file, this._baseUrl).href,
       onRuntimeInitialized: () => this._onLibReady()
     })
-
-    // player.on('playing', () => {})
-    // player.on('paused', () => {})
-    // player.on('buffering', () => {})
-    // player.on('error', (err) => {})
-    // player.on('timeupdate', (seconds) => {})
   }
 
   _onLibReady () {
@@ -90,17 +89,22 @@ class Timidity extends EventEmitter {
     // If a song already exists, destroy it before starting a new one
     if (this._songPtr) this._destroySong()
 
+    this.emit('unstarted')
+    this._stopInterval()
+
     if (!this._ready) return this.once('_ready', () => this.load(urlOrBuf))
+
+    this.emit('buffering')
 
     // Save the url or buf to load. Allows detection of when a new interleaved
     // load() starts so we can abort this load.
-    this._currentLoad = urlOrBuf
+    this._currentUrlOrBuf = urlOrBuf
 
     let midiBuf
     if (typeof urlOrBuf === 'string') {
       midiBuf = await this._fetch(new URL(urlOrBuf, this._baseUrl))
       // If another load() started while awaiting, abort this load
-      if (this._currentLoad !== urlOrBuf) return
+      if (this._currentUrlOrBuf !== urlOrBuf) return
     } else if (urlOrBuf instanceof Uint8Array) {
       midiBuf = urlOrBuf
     } else {
@@ -121,7 +125,7 @@ class Timidity extends EventEmitter {
       )
 
       // If another load() started while awaiting, abort this load
-      if (this._currentLoad !== urlOrBuf) return
+      if (this._currentUrlOrBuf !== urlOrBuf) return
 
       // Retry the song load, now that instruments have been loaded
       this._lib._mid_song_free(songPtr)
@@ -245,12 +249,22 @@ class Timidity extends EventEmitter {
     this._audioContext.resume()
 
     this._playing = true
+    if (this._ready && !this._currentUrlOrBuf) {
+      this.emit('playing')
+      this._startInterval()
+    }
   }
 
   _onAudioProcess (event) {
     const sampleCount = (this._songPtr && this._playing)
       ? this._readMidiData()
       : 0
+
+    if (sampleCount > 0 && this._currentUrlOrBuf) {
+      this._currentUrlOrBuf = null
+      this.emit('playing')
+      this._startInterval()
+    }
 
     const output0 = event.outputBuffer.getChannelData(0)
     const output1 = event.outputBuffer.getChannelData(1)
@@ -298,6 +312,8 @@ class Timidity extends EventEmitter {
     if (this.destroyed) throw new Error('pause() called after destroy()')
 
     this._playing = false
+    this._stopInterval()
+    this.emit('paused')
   }
 
   seek (time) {
@@ -307,6 +323,7 @@ class Timidity extends EventEmitter {
 
     const timeMs = Math.floor(time * 1000)
     this._lib._mid_song_seek(this._songPtr, timeMs)
+    this._onTimeupdate()
   }
 
   get volume () {
@@ -333,6 +350,25 @@ class Timidity extends EventEmitter {
     return this.currentTime / this.duration
   }
 
+  /**
+   * This event fires when the time indicated by the `currentTime` property
+   * has been updated.
+   */
+  _onTimeupdate () {
+    this.emit('timeupdate', this.currentTime)
+  }
+
+  _startInterval () {
+    this._onTimeupdate()
+    this._interval = setInterval(() => this._onTimeupdate(), 1000)
+  }
+
+  _stopInterval () {
+    this._onTimeupdate()
+    clearInterval(this._interval)
+    this._interval = null
+  }
+
   destroy () {
     debug('destroy')
     if (this.destroyed) throw new Error('destroy() called after destroy()')
@@ -342,6 +378,8 @@ class Timidity extends EventEmitter {
   _destroy (err) {
     if (this.destroyed) return
     this.destroyed = true
+
+    this._stopInterval()
 
     this._array = null
 
