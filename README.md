@@ -18,6 +18,25 @@ Play MIDI files in a browser with a simple API.
 **NO OPEN SOURCE LICENSE YET.** If you want to use this, send me an email. I'm still figuring
 out what license to use.
 
+## Demo
+
+This package is used on [BitMidi.com](https://bitmidi.com), the wayback machine for old-school MIDI files! Check out some examples here:
+
+- [Backstreet Boys - I Want It That Way MIDI](https://bitmidi.com/backstreet-boys-i-want-it-that-way-mid)
+- [Beethoven Moonlight Sonata MIDI](https://bitmidi.com/beethoven-moonlight-sonata-mid)
+- [Kingdom Hearts - Dearly Beloved MIDI](https://bitmidi.com/kingdom-hearts-dearly-beloved-mid)
+- [Camptown Races MIDI](https://bitmidi.com/camptown-mid)
+- [Michael Jackson - Billie Jean MIDI](https://bitmidi.com/michael-jackson-billie-jean-mid)
+- [Michael Jackson - Don't Stop Till You Get Enough MIDI](https://bitmidi.com/michael-jackson-dont-stop-till-you-get-enough-mid)
+- [Passenger - Let Her Go MIDI](https://bitmidi.com/passenger-let_her_go-mid)
+- [Red Hot Chili Peppers - Otherside MIDI](https://bitmidi.com/red-hot-chili-peppers-otherside-mid)
+- [Red Hot Chili Peppers - Californication MIDI](https://bitmidi.com/red-hot-chili-peppers-californication-mid)
+- [Golden Sun - Overworld MIDI](https://bitmidi.com/golden-sun-overworld-mid)
+- [Pokemon - Pokemon Center Theme MIDI](https://bitmidi.com/pokemon-pokemon-center-theme-mid)
+- [Pokemon Red Blue Yellow - Opening MIDI](https://bitmidi.com/pokemon-redblueyellow-opening-yellow-mid)
+- [Pokemon Red Blue Yellow - Wild Pokemon Battle MIDI](https://bitmidi.com/pokemon-redblueyellow-wild-pokemon-battle-mid)
+- [Legend of Zelda - Overworld MIDI](https://bitmidi.com/legend-of-zelda-overworld-mid)
+
 ## Install
 
 ```
