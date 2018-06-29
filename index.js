@@ -73,7 +73,7 @@ class Timidity extends EventEmitter {
 
     this._bufferPtr = this._lib._malloc(BUFFER_SIZE * BYTES_PER_SAMPLE)
 
-    debug('Initialized libtimidity')
+    debugVerbose('Initialized libtimidity')
     this._ready = true
     this.emit('_ready')
   }
