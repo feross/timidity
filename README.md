@@ -79,10 +79,10 @@ server:
 
 ```js
 const timidityPath = path.dirname(require.resolve('timidity'))
-app.use('/', express.static(timidityPath))
+app.use(express.static(timidityPath))
 
 const freepatsPath = path.dirname(require.resolve('freepats'))
-app.use('/', express.static(freepatsPath))
+app.use(express.static(freepatsPath))
 ```
 
 ### `player.load(urlOrBuf)`
