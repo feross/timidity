@@ -21,7 +21,7 @@
     "freepats": "^1.0.1"
   },
   "devDependencies": {
-    "babel-minify": "^0.4.3",
+    "babel-minify": "^0.5.0",
     "browserify": "^16.2.2",
     "standard": "*"
   },
