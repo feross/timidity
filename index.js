@@ -151,7 +151,7 @@ class Timidity extends EventEmitter {
     const missingInstruments = []
     for (let i = 0; i < missingCount; i++) {
       const instrumentPtr = this._lib._mid_get_load_request(songPtr, i)
-      const instrument = this._lib.Pointer_stringify(instrumentPtr)
+      const instrument = this._lib.UTF8ToString(instrumentPtr)
       missingInstruments.push(instrument)
     }
     return missingInstruments
