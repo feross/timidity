@@ -16,7 +16,7 @@
     "url": "https://github.com/feross/timidity/issues"
   },
   "dependencies": {
-    "brfs": "^1.6.1",
+    "brfs": "^2.0.2",
     "debug": "^3.1.0",
     "freepats": "^1.0.1"
   },
