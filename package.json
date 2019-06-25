@@ -50,7 +50,7 @@
   "scripts": {
     "build": "./tools/build.sh",
     "download": "./tools/download.sh",
-    "size": "npm run build && browserify . | minify | gzip | wc -c",
+    "size": "npm run build && browserify . | minify | gzip | wc -c && cat libtimidity.wasm | gzip | wc -c",
     "test": "standard"
   },
   "standard": {

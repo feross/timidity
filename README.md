@@ -45,7 +45,7 @@ npm install timidity
 
 ## Features
 
-- Lightweight – Just 34 KB of JavaScript and 23 KB of lazy-loaded WebAssembly.
+- Lightweight – Just 23 KB of JavaScript and 22 KB of lazy-loaded WebAssembly
 - Simple – No bells and whistles. Just what is needed to play MIDI files.
 - Works with the [FreePats General MIDI soundset](https://www.npmjs.com/package/freepats).
 
