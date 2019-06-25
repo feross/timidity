@@ -1,3 +1,10 @@
+Changes by libtimidity-0.2.6:
+-----------------------------
+
+* fixed a possibly signed integer overflow with crafted midi files.
+* other minor clean-ups, etc.
+
+
 Changes by libtimidity-0.2.5:
 -----------------------------
 

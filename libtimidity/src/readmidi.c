@@ -502,12 +502,23 @@ static MidEvent *groom_list(MidSong *song, sint32 divisions,sint32 *eventsp,
       /* Recompute time in samples*/
       if ((dt=meep->event.time - at) && !counting_time)
 	{
+	  if (song->sample_increment  > 2147483647/dt ||
+	      song->sample_correction > 2147483647/dt) {
+	      goto _overflow;
+	    }
 	  samples_to_do = song->sample_increment * dt;
 	  sample_cum += song->sample_correction * dt;
 	  if (sample_cum & 0xFFFF0000)
 	    {
 	      samples_to_do += ((sample_cum >> 16) & 0xFFFF);
 	      sample_cum &= 0x0000FFFF;
+	    }
+	  if (st >= 2147483647 - samples_to_do) {
+	  _overflow:
+	      DEBUG_MSG("Overflow in sample counter\n");
+	      free_midi_list(song);
+	      timi_free(groomed_list);
+	      return NULL;
 	    }
 	  st += samples_to_do;
 	}
