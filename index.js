@@ -392,7 +392,6 @@ class Timidity extends EventEmitter {
   }
 
   _destroySong () {
-    this.pause()
     this._lib._mid_song_free(this._songPtr)
     this._songPtr = 0
   }
