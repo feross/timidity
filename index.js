@@ -282,8 +282,10 @@ class Timidity extends EventEmitter {
     if (this._songPtr && this._playing && sampleCount === 0) {
       // Reached the end of the file
       this.emit('ended')
-      this.seek(0)
-      this.pause()
+      if (!this.destroyed) {
+        this.seek(0)
+        this.pause()
+      }
     }
   }
 
