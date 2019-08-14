@@ -63,6 +63,18 @@ player.on('playing', () => {
 })
 ```
 
+## Easier Usage
+
+If you just want to play MIDI files in the browser and don't need a JavaScript
+API interface, consider using the
+[`bg-sound`](https://www.npmjs.com/package/bg-sound) package, which supports
+this much simpler usage:
+
+```html
+<script src="bg-sound.min.js"></script>
+<bg-sound src="sound.mid"></bg-sound>
+```
+
 ## API
 
 ### `player = new Timidity([baseUrl])`
