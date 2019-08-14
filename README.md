@@ -15,9 +15,6 @@
 
 Play MIDI files in a browser with a simple API.
 
-**NO OPEN SOURCE LICENSE YET.** If you want to use this, send me an email. I'm still figuring
-out what license to use.
-
 ## Demo
 
 This package is used on [BitMidi.com](https://bitmidi.com), the wayback machine for old-school MIDI files! Check out some examples here:

@@ -41,7 +41,7 @@
     "webassembly",
     "soundfont"
   ],
-  "license": "-",
+  "license": "MIT",
   "main": "index.js",
   "repository": {
     "type": "git",
