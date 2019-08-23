@@ -86,7 +86,7 @@ static char *timi_fgets(char *s, int size, FILE *fp)
 
     *p = '\0';
 
-    return (num_read != 0) ? s : NULL;
+    return (num_read != 0)? s : NULL;
 }
 
 static FILE **rcf_fp;
@@ -623,8 +623,6 @@ void mid_song_free(MidSong *song)
   if (!song) return;
 
   free_instruments(song);
-  if (song->ifp)
-    fclose(song->ifp);
 
   for (i = 0; i < 128; i++) {
     timi_free(song->tonebank[i]);

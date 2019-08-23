@@ -15,9 +15,6 @@
 
 Play MIDI files in a browser with a simple API.
 
-**NO OPEN SOURCE LICENSE YET.** If you want to use this, send me an email. I'm still figuring
-out what license to use.
-
 ## Demo
 
 This package is used on [BitMidi.com](https://bitmidi.com), the wayback machine for old-school MIDI files! Check out some examples here:
@@ -45,7 +42,7 @@ npm install timidity
 
 ## Features
 
-- Lightweight – Just 34 KB of JavaScript and 23 KB of lazy-loaded WebAssembly.
+- Lightweight – Just 23 KB of JavaScript and 22 KB of lazy-loaded WebAssembly
 - Simple – No bells and whistles. Just what is needed to play MIDI files.
 - Works with the [FreePats General MIDI soundset](https://www.npmjs.com/package/freepats).
 
@@ -61,6 +58,18 @@ player.play()
 player.on('playing', () => {
   console.log(player.duration) // => 351.521
 })
+```
+
+## Easier Usage
+
+If you just want to play MIDI files in the browser and don't need a JavaScript
+API interface, consider using the
+[`bg-sound`](https://www.npmjs.com/package/bg-sound) package, which supports
+this much simpler usage:
+
+```html
+<script src="bg-sound.min.js"></script>
+<bg-sound src="sound.mid"></bg-sound>
 ```
 
 ## API

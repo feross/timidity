@@ -181,10 +181,10 @@
 /* assumptions based on OS and/or architecture macros.
  * proceed carefully: many of these are bi-endian CPUs.
  */
-# if defined (__ppc__) || defined(__POWERPC__) || defined(__PPC__)
+# if defined(__ppc__) || defined(__powerpc__) || defined(__POWERPC__) || defined(__PPC__)
 #  define BYTE_ORDER BIG_ENDIAN
 
-# elif (defined(__alpha__) || defined(__alpha))
+# elif defined(__alpha__) || defined(__alpha)
 #  define BYTE_ORDER LITTLE_ENDIAN
 
 # elif defined(__mips__) || defined(__MIPS__)
