@@ -21,13 +21,14 @@
     "freepats": "^1.0.1"
   },
   "devDependencies": {
-    "babel-minify": "^0.5.0",
     "browserify": "^16.2.2",
-    "standard": "*"
+    "standard": "*",
+    "tinyify": "^2.5.2"
   },
   "homepage": "https://bitmidi.com",
   "keywords": [
     "api",
+    "browser",
     "libtimidity",
     "mid file",
     "midi",
@@ -35,11 +36,10 @@
     "midi file",
     "midi player",
     "player",
+    "soundfont",
     "timidity",
-    "browser",
     "web audio",
-    "webassembly",
-    "soundfont"
+    "webassembly"
   ],
   "license": "MIT",
   "main": "index.js",
@@ -50,7 +50,7 @@
   "scripts": {
     "build": "./tools/build.sh",
     "download": "./tools/download.sh",
-    "size": "npm run build && browserify . | minify | gzip | wc -c && cat libtimidity.wasm | gzip | wc -c",
+    "size": "npm run build && browserify --plugin tinyify . | gzip | wc -c && cat libtimidity.wasm | gzip | wc -c",
     "test": "standard"
   },
   "standard": {
