@@ -21,9 +21,9 @@
     "freepats": "^1.0.1"
   },
   "devDependencies": {
+    "babel-minify": "^0.5.1",
     "browserify": "^16.2.2",
-    "standard": "*",
-    "tinyify": "^2.5.2"
+    "standard": "*"
   },
   "homepage": "https://bitmidi.com",
   "keywords": [
@@ -50,7 +50,7 @@
   "scripts": {
     "build": "./tools/build.sh",
     "download": "./tools/download.sh",
-    "size": "npm run build && browserify --plugin tinyify . | gzip | wc -c && cat libtimidity.wasm | gzip | wc -c",
+    "size": "npm run build && cat libtimidity.wasm | gzip | wc -c && browserify -r . | minify | gzip | wc -c",
     "test": "standard"
   },
   "standard": {
