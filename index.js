@@ -57,10 +57,12 @@ class Timidity extends EventEmitter {
     this._node.addEventListener('audioprocess', this._onAudioProcess)
     this._node.connect(this._audioContext.destination)
 
-    this._lib = LibTimidity({
+    LibTimidity({
       locateFile: file => new URL(file, this._baseUrl).href,
-      onRuntimeInitialized: () => this._onLibReady()
-    })
+    }).then((lib) => {
+      this._lib = lib;
+      this._onLibReady();
+    });
   }
 
   _onLibReady () {
