@@ -398,4 +398,8 @@ class Timidity extends EventEmitter {
   }
 }
 
+if (window) {
+	window.TimidityPlayer = Timidity
+}
+
 module.exports = Timidity

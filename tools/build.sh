@@ -13,3 +13,5 @@ emcc -o libtimidity.js $OPTIMIZE_FLAGS $BUILD_FLAGS libtimidity/src/*.c
 
 # Include the freepats config in the published package so `brfs` can inline it
 cp node_modules/freepats/freepats.cfg freepats.cfg
+
+npx browserify -r . | npx minify > timidity.js
