@@ -6,9 +6,10 @@ const LibTimidity = require('./libtimidity')
 const debug = Debug('timidity')
 const debugVerbose = Debug('timidity:verbose')
 
+const CDN_PATSOURCE = 'https://cdn.noteworthycomposer.org/freepats/';
 // Inlined at build time by 'brfs' browserify transform
 const TIMIDITY_CFG = fs.readFileSync(
-  __dirname + '/freepats.cfg', // eslint-disable-line no-path-concat
+  __dirname + '/pats.cfg', // eslint-disable-line no-path-concat
   'utf8'
 )
 
@@ -194,7 +195,7 @@ class Timidity extends EventEmitter {
       return this._pendingFetches[instrument]
     }
 
-    const url = new URL(instrument, this._baseUrl)
+    const url = new URL(instrument, CDN_PATSOURCE)
     const bufPromise = this._fetch(url)
     this._pendingFetches[instrument] = bufPromise
 
@@ -228,11 +229,7 @@ class Timidity extends EventEmitter {
   }
 
   async _fetch (url) {
-    const opts = {
-      mode: 'cors',
-      credentials: 'same-origin'
-    }
-    const response = await window.fetch(url, opts)
+    const response = await window.fetch(url)
     if (response.status !== 200) throw new Error(`Could not load ${url}`)
 
     const arrayBuffer = await response.arrayBuffer()
@@ -398,8 +395,9 @@ class Timidity extends EventEmitter {
   }
 }
 
-if (window) {
-	window.TimidityPlayer = Timidity
+if (typeof module === 'object' && module.exports) {
+	module.exports = Timidity;
 }
-
-module.exports = Timidity
+if (typeof window !== 'undefined') {
+	window.Timidity = Timidity;
+}

@@ -52,7 +52,9 @@
     "build": "./tools/build.sh",
     "download": "./tools/download.sh",
     "size": "npm run build && cat libtimidity.wasm | gzip | wc -c && browserify -r . | minify | gzip | wc -c",
-    "test": "standard"
+	"test": "standard",
+	"pkgbld": "npx browserify index.js -o timidity.js",
+	"pkgmin":  "npx minify timidity.js --outFile timidity.min.js"
   },
   "standard": {
     "ignore": [
