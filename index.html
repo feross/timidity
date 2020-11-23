@@ -5,17 +5,34 @@
 <title>Timidity Test</title>
 </head>
 <body>
-<script src="timidity.js"></script>
-<button id="startplay" onclick="doPlayStart()">Start</button>
+<script src="timidity.min.js"></script>
+<button id="playBtn">Start</button>
 <script>
 	let player = null;
+	let playing = false;
+	let btn = document.getElementById('playBtn');
 
-	function doPlayStart() {
-		console.log('click initiated');
-		if (!player) player = new Timidity('/','/freepats/');
-		player.load('/scale.mid');
-		player.play();
-	}
+	btn.onclick = function() {
+		console.log('button clicked');
+		if (!player) {
+			player = new Timidity('/','/freepats/');
+			player.on('ended', () => {
+				playing = false;
+				btn.innerText = 'Play';
+			});
+		}
+
+		if (playing) {
+			playing = false;
+			btn.innerText = 'Play';
+			player.pause();
+		} else {
+			player.load('/scale.mid');
+			player.play();
+			btn.innerText = 'Stop';
+			playing = true;
+		}
+	};
 </script>
 </body>
 </html>

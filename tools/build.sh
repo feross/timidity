@@ -3,7 +3,9 @@
 set -e
 
 # Compile the libtimidity C codebase to JavaScript with emscripten
-BUILD_FLAGS="-s STRICT=1 -s ASSERTIONS=1 -s ALLOW_MEMORY_GROWTH=1 -s MODULARIZE=1 -s EXPORT_NAME=LibTimidity -s EXPORTED_FUNCTIONS=@tools/exports.json -s EXTRA_EXPORTED_RUNTIME_METHODS=@tools/exports-runtime.json"
+BUILD_FLAGS="-s STRICT=1 -s FORCE_FILESYSTEM=1 -s ALLOW_MEMORY_GROWTH=1 -s MODULARIZE=1 -s EXPORT_NAME=LibTimidity -s EXPORTED_FUNCTIONS=@tools/exports.json -s EXTRA_EXPORTED_RUNTIME_METHODS=@tools/exports-runtime.json"
+
+# -s ASSERTIONS=1
 
 # Maximize optimization options for smallest file size
 OPTIMIZE_FLAGS="-Oz -s ENVIRONMENT=web" # PRODUCTION

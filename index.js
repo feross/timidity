@@ -31,10 +31,12 @@ class Timidity extends EventEmitter {
     if (!baseUrl.endsWith('/')) baseUrl += '/'
 	this._baseUrl = new URL(baseUrl, window.location.origin).href
 	
+	if (!patchUrl.includes('://')) patchUrl = new URL(patchUrl, window.location.origin).href
 	if (!patchUrl.endsWith('/')) patchUrl += '/'
 	this._patUrl = patchUrl
 
-    this._ready = false
+	this._ready = false
+	this._lib = null
     this._playing = false
     this._pendingFetches = {} // instrument -> fetch
     this._songPtr = 0
@@ -61,21 +63,20 @@ class Timidity extends EventEmitter {
     this._node.addEventListener('audioprocess', this._onAudioProcess)
     this._node.connect(this._audioContext.destination)
 
-    this._lib = LibTimidity({
-      locateFile: file => new URL(file, this._baseUrl).href,
-      onRuntimeInitialized: () => this._onLibReady()
-    })
+     LibTimidity({ locateFile: file => new URL(file, this._baseUrl).href }).then( lib => this._onLibReady(lib) )
   }
 
-  _onLibReady () {
-    this._lib.FS.writeFile('/timidity.cfg', TIMIDITY_CFG)
+  _onLibReady (lib) {
+	this._lib = lib
 
-    const result = this._lib._mid_init('/timidity.cfg')
+	lib.FS.writeFile('/timidity.cfg', TIMIDITY_CFG)
+
+    const result = lib._mid_init('/timidity.cfg')
     if (result !== 0) {
       return this._destroy(new Error('Failed to initialize libtimidity'))
     }
 
-    this._bufferPtr = this._lib._malloc(BUFFER_SIZE * BYTES_PER_SAMPLE)
+    this._bufferPtr = lib._malloc(BUFFER_SIZE * BYTES_PER_SAMPLE)
 
     debugVerbose('Initialized libtimidity')
     this._ready = true
