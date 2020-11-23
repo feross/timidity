@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Timidity Test</title>
+</head>
+<body>
+<script src="timidity.js"></script>
+<button id="startplay" onclick="doPlayStart()">Start</button>
+<script>
+	let player = null;
+
+	function doPlayStart() {
+		console.log('click initiated');
+		if (!player) player = new Timidity('/','/freepats/');
+		player.load('/scale.mid');
+		player.play();
+	}
+</script>
+</body>
+</html>

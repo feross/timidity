@@ -23,13 +23,16 @@ const AudioContext = typeof window !== 'undefined' &&
   (window.AudioContext || window.webkitAudioContext)
 
 class Timidity extends EventEmitter {
-  constructor (baseUrl = '/') {
+  constructor (baseUrl = '/', patchUrl = CDN_PATSOURCE) {
     super()
 
     this.destroyed = false
 
     if (!baseUrl.endsWith('/')) baseUrl += '/'
-    this._baseUrl = new URL(baseUrl, window.location.origin).href
+	this._baseUrl = new URL(baseUrl, window.location.origin).href
+	
+	if (!patchUrl.endsWith('/')) patchUrl += '/'
+	this._patUrl = patchUrl
 
     this._ready = false
     this._playing = false
@@ -195,7 +198,7 @@ class Timidity extends EventEmitter {
       return this._pendingFetches[instrument]
     }
 
-    const url = new URL(instrument, CDN_PATSOURCE)
+    const url = new URL(instrument, this._patUrl)
     const bufPromise = this._fetch(url)
     this._pendingFetches[instrument] = bufPromise
 
