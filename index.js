@@ -8,7 +8,7 @@ const debugVerbose = Debug('timidity:verbose')
 
 // Inlined at build time by 'brfs' browserify transform
 const TIMIDITY_CFG = fs.readFileSync(
-  __dirname + '/freepats.cfg', // eslint-disable-line no-path-concat
+  __dirname + '/freepats.cfg', // eslint-disable-line node/no-path-concat
   'utf8'
 )
 
@@ -57,9 +57,11 @@ class Timidity extends EventEmitter {
     this._node.addEventListener('audioprocess', this._onAudioProcess)
     this._node.connect(this._audioContext.destination)
 
-    this._lib = LibTimidity({
-      locateFile: file => new URL(file, this._baseUrl).href,
-      onRuntimeInitialized: () => this._onLibReady()
+    LibTimidity({
+      locateFile: file => new URL(file, this._baseUrl).href
+    }).then((lib) => {
+      this._lib = lib
+      this._onLibReady()
     })
   }
 
