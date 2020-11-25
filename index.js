@@ -8,10 +8,7 @@ const debugVerbose = Debug('timidity:verbose')
 
 const CDN_PATSOURCE = 'https://cdn.noteworthycomposer.org/freepats/';
 // Inlined at build time by 'brfs' browserify transform
-const TIMIDITY_CFG = fs.readFileSync(
-  __dirname + '/pats.cfg', // eslint-disable-line no-path-concat
-  'utf8'
-)
+const TIMIDITY_CFG = fs.readFileSync('pats.cfg','utf8')
 
 const SAMPLE_RATE = 44100
 const AUDIO_FORMAT = 0x8010 // format of the rendered audio 's16'
