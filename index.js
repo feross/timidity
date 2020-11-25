@@ -1,3 +1,4 @@
+/*! timidity. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 const Debug = require('debug')
 const EventEmitter = require('events').EventEmitter
 const fs = require('fs')
