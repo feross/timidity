@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const process = require('process');
+const gzipme = require('gzipme');
 
 fs.mkdirSync('freepats');
 fs.mkdirSync('freepats/d0');
@@ -15,6 +16,7 @@ flist.forEach((file) => {
 		let newname = file.name.replace(/^([0-9]+).+/, (m,m1) => `d${m1}.pat`);
 		process.stdout.write(`${file.name} -> ${newname}\n`);
 		fs.copyFileSync(`${folder}/${file.name}`,`freepats/d0/${newname}`); 
+		gzipme(`${folder}/${file.name}`, {mode:'best', output:`freepats/d0/${newname}.gz`}); 
 	}
 });
 
@@ -26,5 +28,6 @@ flist.forEach((file) => {
 		let newname = file.name.replace(/^([0-9]+).+/, (m,m1) => `t${m1}.pat`);
 		process.stdout.write(`${file.name} -> ${newname}\n`);
 		fs.copyFileSync(`${folder}/${file.name}`,`freepats/t0/${newname}`); 
+		gzipme(`${folder}/${file.name}`, {mode:'best', output:`freepats/t0/${newname}.gz`}); 
 	}
 });

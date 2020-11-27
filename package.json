@@ -23,6 +23,7 @@
   "devDependencies": {
     "babel-minify": "^0.5.1",
     "browserify": "^16.2.2",
+    "gzipme": "^1.0.0",
     "standard": "*"
   },
   "homepage": "https://bitmidi.com",
