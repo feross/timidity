@@ -24,6 +24,7 @@
     "babel-minify": "^0.5.1",
     "browserify": "^16.2.2",
     "gzipme": "^1.0.0",
+    "minimist": "^1.2.5",
     "standard": "*"
   },
   "homepage": "https://bitmidi.com",
@@ -50,13 +51,13 @@
   },
   "scripts": {
     "setup-emsdk": "source ~/emsdk/emsdk_env.sh",
-    "pyserver": "./tools/pyserver.py",
+    "make-patches": "node ./tools/make-patch-folder.js",
+    "make-gzip-patches": "node ./tools/make-patch-folder.js -z",
+    "pyserver": "cd ./build/ && python ../tools/pyserver.py",
     "build": "./tools/build.sh",
     "download": "./tools/download.sh",
-    "size": "npm run build && cat libtimidity.wasm | gzip | wc -c && browserify -r . | minify | gzip | wc -c",
-    "test": "standard",
-    "pkgbld": "npx browserify index.js -o timidity.js",
-    "pkgmin": "npx minify timidity.js --outFile timidity.min.js"
+    "pkgbld": "npx browserify index.js -o build/timidity.js",
+    "pkgmin": "npx minify build/timidity.js --outFile build/timidity.min.js"
   },
   "standard": {
     "ignore": [

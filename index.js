@@ -6,7 +6,6 @@ const LibTimidity = require('./libtimidity');
 const debug = Debug('timidity');
 const debugVerbose = Debug('timidity:verbose');
 
-const CDN_PATSOURCE = 'https://cdn.noteworthycomposer.org/freepats/';
 // Inlined at build time by 'brfs' browserify transform
 const TIMIDITY_CFG = fs.readFileSync('pats.cfg', 'utf8');
 
@@ -19,9 +18,9 @@ const BUFFER_SIZE = 16384; // buffer size for each render() call
 const AudioContext = (typeof window !== 'undefined') && (window.AudioContext || window.webkitAudioContext);
 
 const defaultOptions = {
-	baseUrl: '/',
-	patchUrl: CDN_PATSOURCE,
-	gzipPatches: true
+	baseUrl: 'https://cdn.noteworthycomposer.org/timidity/',
+	patUrl:	'pat/',
+	config: TIMIDITY_CFG
 };
 
 class Timidity extends EventEmitter {
@@ -30,18 +29,23 @@ class Timidity extends EventEmitter {
 
 		options = Object.assign({},defaultOptions,options);
 		let baseUrl = options.baseUrl || defaultOptions.baseUrl;
-		let patchUrl = options.patchUrl || defaultOptions.patchUrl;
+		let patUrl = options.patUrl || defaultOptions.patUrl;
 
 		this.destroyed = false;
 
+		if (!baseUrl.includes('//')) baseUrl = new URL(baseUrl, window.location.origin).href;
 		if (!baseUrl.endsWith('/')) baseUrl += '/';
-		this._baseUrl = new URL(baseUrl, window.location.origin).href;
+		this._baseUrl = baseUrl;
 
-		if (!patchUrl.includes('://')) patchUrl = new URL(patchUrl, window.location.origin).href;
-		if (!patchUrl.endsWith('/')) patchUrl += '/';
-		this._patUrl = patchUrl;
+		if (!patUrl) {
+			patUrl = `${baseUrl}/pat/`;
+		} else if (!patUrl.includes('//')) {
+			patUrl = new URL(patUrl, patUrl.startsWith('/') ? window.location.origin : baseUrl).href;
+		}
+		if (!patUrl.endsWith('/')) patUrl += '/';
+		this._patUrl = patUrl;
 
-		this.gzipPatches = options.gzipPatches;
+		this._config = options.config;
 
 		this._ready = false;
 		this._lib = null;
@@ -71,13 +75,16 @@ class Timidity extends EventEmitter {
 		this._node.addEventListener('audioprocess', this._onAudioProcess);
 		this._node.connect(this._audioContext.destination);
 
-		LibTimidity({ locateFile: file => new URL(file, this._baseUrl).href }).then(lib => this._onLibReady(lib));
+		LibTimidity({ locateFile: file => {
+			console.log(`in LibTimidity locateFile (${file})`);
+			return new URL(file, this._baseUrl).href
+		}}).then(lib => this._onLibReady(lib));
 	}
 
 	_onLibReady(lib) {
 		this._lib = lib;
 
-		lib.FS.writeFile('/timidity.cfg', TIMIDITY_CFG);
+		lib.FS.writeFile('/timidity.cfg', this._config);
 
 		const result = lib._mid_init('/timidity.cfg');
 		if (result !== 0) {
@@ -115,7 +122,7 @@ class Timidity extends EventEmitter {
 
 		let midiBuf;
 		if (typeof urlOrBuf === 'string') {
-			midiBuf = await this._fetch(new URL(urlOrBuf, this._baseUrl));
+			midiBuf = await this._fetch(urlOrBuf);
 			// If another load() started while awaiting, abort this load
 			if (this._currentUrlOrBuf !== urlOrBuf) return;
 		} else if (urlOrBuf instanceof Uint8Array) {
@@ -207,8 +214,7 @@ class Timidity extends EventEmitter {
 			return this._pendingFetches[instrument];
 		}
 
-		let iName = this.gzipPatches ? instrument + '.gz' : instrument;
-		const url = new URL(iName, this._patUrl);
+		const url = new URL(instrument, this._patUrl);
 		const bufPromise = this._fetch(url);
 		this._pendingFetches[instrument] = bufPromise;
 

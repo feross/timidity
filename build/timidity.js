@@ -7,9 +7,8 @@ const LibTimidity = require('./libtimidity');
 const debug = Debug('timidity');
 const debugVerbose = Debug('timidity:verbose');
 
-const CDN_PATSOURCE = 'https://cdn.noteworthycomposer.org/freepats/';
 // Inlined at build time by 'brfs' browserify transform
-const TIMIDITY_CFG = "\ndrumset 0\n\n 25\td0/d025.pat \n 26\td0/d026.pat \n 27\td0/d027.pat \n 31\td0/d031.pat \n 32\td0/d032.pat \n 33\td0/d033.pat \n 34\td0/d034.pat \n 35\td0/d035.pat amp=100\n 36\td0/d036.pat amp=100\n 37\td0/d037.pat \n 38\td0/d038.pat \n 39\td0/d039.pat amp=100\n 40\td0/d040.pat \n 41\td0/d041.pat amp=100\n 42\td0/d042.pat \n 43\td0/d043.pat amp=100\n 44\td0/d044.pat \n 45\td0/d045.pat amp=100\n 46\td0/d046.pat \n 47\td0/d047.pat amp=100\n 48\td0/d048.pat amp=100\n 49\td0/d049.pat \n 50\td0/d050.pat amp=100\n 51\td0/d051.pat \n 52\td0/d052.pat \n 53\td0/d053.pat amp=100\n 54\td0/d054.pat \n 55\td0/d055.pat \n 56\td0/d056.pat \n 57\td0/d057.pat \n 58\td0/d058.pat \n 59\td0/d059.pat \n 60\td0/d060.pat \n 61\td0/d061.pat \n 62\td0/d062.pat \n 63\td0/d063.pat \n 64\td0/d064.pat \n 65\td0/d065.pat \n 66\td0/d066.pat \n 67\td0/d067.pat \n 68\td0/d068.pat \n 69\td0/d069.pat amp=100\n 70\td0/d070.pat \n 71\td0/d071.pat \n 72\td0/d072.pat \n 73\td0/d073.pat \n 74\td0/d074.pat \n 75\td0/d075.pat amp=100\n 76\td0/d076.pat \n 77\td0/d077.pat \n 78\td0/d078.pat amp=100\n 79\td0/d079.pat amp=100\n 80\td0/d080.pat \n 81\td0/d081.pat \n 82\td0/d082.pat \n 84\td0/d084.pat \n\nbank 0\n\n 0\tt0/t000.pat amp=120 pan=center\n 1\tt0/t001.pat \n 2\tt0/t002.pat \n 4\tt0/t004.pat \n 5\tt0/t005.pat \n 6\tt0/t006.pat \n 7\tt0/t007.pat \n 8\tt0/t008.pat \n 9\tt0/t009.pat \n 13\tt0/t013.pat \n 14\tt0/t014.pat \n 15\tt0/t015.pat \n 16\tt0/t016.pat \n 19\tt0/t019.pat \n 21\tt0/t021.pat \n 23\tt0/t023.pat \n 24\tt0/t024.pat \n 25\tt0/t025.pat \n 26\tt0/t026.pat \n 27\tt0/t027.pat \n 28\tt0/t028.pat \n 29\tt0/t029.pat \n 30\tt0/t030.pat \n 32\tt0/t032.pat \n 33\tt0/t033.pat \n 34\tt0/t034.pat \n 35\tt0/t035.pat \n 36\tt0/t036.pat \n 37\tt0/t037.pat \n 38\tt0/t038.pat \n 40\tt0/t040.pat \n 42\tt0/t042.pat \n 44\tt0/t044.pat \n 45\tt0/t045.pat \n 46\tt0/t046.pat \n 47\tt0/t047.pat \n 48\tt0/t048.pat \n 53\tt0/t053.pat \n 56\tt0/t056.pat \n 57\tt0/t057.pat \n 58\tt0/t058.pat \n 59\tt0/t059.pat \n 60\tt0/t060.pat \n 61\tt0/t061.pat \n 64\tt0/t064.pat \n 65\tt0/t065.pat \n 66\tt0/t066.pat \n 67\tt0/t067.pat \n 68\tt0/t068.pat \n 69\tt0/t069.pat \n 70\tt0/t070.pat \n 71\tt0/t071.pat \n 72\tt0/t072.pat \n 73\tt0/t073.pat \n 74\tt0/t074.pat \n 75\tt0/t075.pat \n 76\tt0/t076.pat \n 79\tt0/t079.pat \n 80\tt0/t080.pat \n 84\tt0/t084.pat \n 88\tt0/t088.pat \n 94\tt0/t094.pat \n 95\tt0/t095.pat \n 98\tt0/t098.pat \n 101\tt0/t101.pat \n 102\tt0/t102.pat \n 104\tt0/t104.pat \n 114\tt0/t114.pat \n 115\tt0/t115.pat \n 120\tt0/t120.pat \n 122\tt0/t122.pat \n 125\tt0/t125.pat \n\n";
+const TIMIDITY_CFG = "\ndrumset 0\n\n 25\td025.pat \n 26\td026.pat \n 27\td027.pat \n 31\td031.pat \n 32\td032.pat \n 33\td033.pat \n 34\td034.pat \n 35\td035.pat amp=100\n 36\td036.pat amp=100\n 37\td037.pat \n 38\td038.pat \n 39\td039.pat amp=100\n 40\td040.pat \n 41\td041.pat amp=100\n 42\td042.pat \n 43\td043.pat amp=100\n 44\td044.pat \n 45\td045.pat amp=100\n 46\td046.pat \n 47\td047.pat amp=100\n 48\td048.pat amp=100\n 49\td049.pat \n 50\td050.pat amp=100\n 51\td051.pat \n 52\td052.pat \n 53\td053.pat amp=100\n 54\td054.pat \n 55\td055.pat \n 56\td056.pat \n 57\td057.pat \n 58\td058.pat \n 59\td059.pat \n 60\td060.pat \n 61\td061.pat \n 62\td062.pat \n 63\td063.pat \n 64\td064.pat \n 65\td065.pat \n 66\td066.pat \n 67\td067.pat \n 68\td068.pat \n 69\td069.pat amp=100\n 70\td070.pat \n 71\td071.pat \n 72\td072.pat \n 73\td073.pat \n 74\td074.pat \n 75\td075.pat amp=100\n 76\td076.pat \n 77\td077.pat \n 78\td078.pat amp=100\n 79\td079.pat amp=100\n 80\td080.pat \n 81\td081.pat \n 82\td082.pat \n 84\td084.pat \n\nbank 0\n\n 0\tt000.pat amp=120 pan=center\n 1\tt001.pat \n 2\tt002.pat \n 4\tt004.pat \n 5\tt005.pat \n 6\tt006.pat \n 7\tt007.pat \n 8\tt008.pat \n 9\tt009.pat \n 13\tt013.pat \n 14\tt014.pat \n 15\tt015.pat \n 16\tt016.pat \n 19\tt019.pat \n 21\tt021.pat \n 23\tt023.pat \n 24\tt024.pat \n 25\tt025.pat \n 26\tt026.pat \n 27\tt027.pat \n 28\tt028.pat \n 29\tt029.pat \n 30\tt030.pat \n 32\tt032.pat \n 33\tt033.pat \n 34\tt034.pat \n 35\tt035.pat \n 36\tt036.pat \n 37\tt037.pat \n 38\tt038.pat \n 40\tt040.pat \n 42\tt042.pat \n 44\tt044.pat \n 45\tt045.pat \n 46\tt046.pat \n 47\tt047.pat \n 48\tt048.pat \n 53\tt053.pat \n 56\tt056.pat \n 57\tt057.pat \n 58\tt058.pat \n 59\tt059.pat \n 60\tt060.pat \n 61\tt061.pat \n 64\tt064.pat \n 65\tt065.pat \n 66\tt066.pat \n 67\tt067.pat \n 68\tt068.pat \n 69\tt069.pat \n 70\tt070.pat \n 71\tt071.pat \n 72\tt072.pat \n 73\tt073.pat \n 74\tt074.pat \n 75\tt075.pat \n 76\tt076.pat \n 79\tt079.pat \n 80\tt080.pat \n 84\tt084.pat \n 88\tt088.pat \n 94\tt094.pat \n 95\tt095.pat \n 98\tt098.pat \n 101\tt101.pat \n 102\tt102.pat \n 104\tt104.pat \n 114\tt114.pat \n 115\tt115.pat \n 120\tt120.pat \n 122\tt122.pat \n 125\tt125.pat \n";
 
 const SAMPLE_RATE = 44100;
 const AUDIO_FORMAT = 0x8010; // format of the rendered audio 's16'
@@ -20,9 +19,9 @@ const BUFFER_SIZE = 16384; // buffer size for each render() call
 const AudioContext = (typeof window !== 'undefined') && (window.AudioContext || window.webkitAudioContext);
 
 const defaultOptions = {
-	baseUrl: '/',
-	patchUrl: CDN_PATSOURCE,
-	gzipPatches: true
+	baseUrl: 'https://cdn.noteworthycomposer.org/timidity/',
+	patUrl:	'pat/',
+	config: TIMIDITY_CFG
 };
 
 class Timidity extends EventEmitter {
@@ -31,18 +30,23 @@ class Timidity extends EventEmitter {
 
 		options = Object.assign({},defaultOptions,options);
 		let baseUrl = options.baseUrl || defaultOptions.baseUrl;
-		let patchUrl = options.patchUrl || defaultOptions.patchUrl;
+		let patUrl = options.patUrl || defaultOptions.patUrl;
 
 		this.destroyed = false;
 
+		if (!baseUrl.includes('//')) baseUrl = new URL(baseUrl, window.location.origin).href;
 		if (!baseUrl.endsWith('/')) baseUrl += '/';
-		this._baseUrl = new URL(baseUrl, window.location.origin).href;
+		this._baseUrl = baseUrl;
 
-		if (!patchUrl.includes('://')) patchUrl = new URL(patchUrl, window.location.origin).href;
-		if (!patchUrl.endsWith('/')) patchUrl += '/';
-		this._patUrl = patchUrl;
+		if (!patUrl) {
+			patUrl = `${baseUrl}/pat/`;
+		} else if (!patUrl.includes('//')) {
+			patUrl = new URL(patUrl, patUrl.startsWith('/') ? window.location.origin : baseUrl).href;
+		}
+		if (!patUrl.endsWith('/')) patUrl += '/';
+		this._patUrl = patUrl;
 
-		this.gzipPatches = options.gzipPatches;
+		this._config = options.config;
 
 		this._ready = false;
 		this._lib = null;
@@ -72,13 +76,16 @@ class Timidity extends EventEmitter {
 		this._node.addEventListener('audioprocess', this._onAudioProcess);
 		this._node.connect(this._audioContext.destination);
 
-		LibTimidity({ locateFile: file => new URL(file, this._baseUrl).href }).then(lib => this._onLibReady(lib));
+		LibTimidity({ locateFile: file => {
+			console.log(`in LibTimidity locateFile (${file})`);
+			return new URL(file, this._baseUrl).href
+		}}).then(lib => this._onLibReady(lib));
 	}
 
 	_onLibReady(lib) {
 		this._lib = lib;
 
-		lib.FS.writeFile('/timidity.cfg', TIMIDITY_CFG);
+		lib.FS.writeFile('/timidity.cfg', this._config);
 
 		const result = lib._mid_init('/timidity.cfg');
 		if (result !== 0) {
@@ -116,7 +123,7 @@ class Timidity extends EventEmitter {
 
 		let midiBuf;
 		if (typeof urlOrBuf === 'string') {
-			midiBuf = await this._fetch(new URL(urlOrBuf, this._baseUrl));
+			midiBuf = await this._fetch(urlOrBuf);
 			// If another load() started while awaiting, abort this load
 			if (this._currentUrlOrBuf !== urlOrBuf) return;
 		} else if (urlOrBuf instanceof Uint8Array) {
@@ -208,8 +215,7 @@ class Timidity extends EventEmitter {
 			return this._pendingFetches[instrument];
 		}
 
-		let iName = this.gzipPatches ? instrument + '.gz' : instrument;
-		const url = new URL(iName, this._patUrl);
+		const url = new URL(instrument, this._patUrl);
 		const bufPromise = this._fetch(url);
 		this._pendingFetches[instrument] = bufPromise;
 

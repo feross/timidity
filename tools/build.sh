@@ -13,5 +13,7 @@ OPTIMIZE_FLAGS="-Oz -s ENVIRONMENT=web" # PRODUCTION
 
 emcc -o libtimidity.js $OPTIMIZE_FLAGS $BUILD_FLAGS libtimidity/src/*.c
 
+mv libtimidity.wasm build/libtimidity.wasm
+
 # Include the freepats config in the published package so `brfs` can inline it
 # cp node_modules/freepats/freepats.cfg freepats.cfg
