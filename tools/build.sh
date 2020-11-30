@@ -8,12 +8,18 @@ BUILD_FLAGS="-s STRICT=1 -s FORCE_FILESYSTEM=1 -s ALLOW_MEMORY_GROWTH=1 -s MODUL
 # -s ASSERTIONS=1
 
 # Maximize optimization options for smallest file size
-OPTIMIZE_FLAGS="-Oz -s ENVIRONMENT=web" # PRODUCTION
-# OPTIMIZE_FLAGS="-g4 -DTIMIDITY_DEBUG" # DEBUG
+OPTIMIZE_FLAGS_PROD="-Oz -s ENVIRONMENT=web"
+OPTIMIZE_FLAGS_DEBUG="-g4 -DTIMIDITY_DEBUG"
 
-emcc -o libtimidity.js $OPTIMIZE_FLAGS $BUILD_FLAGS libtimidity/src/*.c
-
-mv libtimidity.wasm build/libtimidity.wasm
+emcc -o libtimidity.js $OPTIMIZE_FLAGS_PROD $BUILD_FLAGS libtimidity/src/*.c
+emcc -o libtimidity.debug.js $OPTIMIZE_FLAGS_DEBUG $BUILD_FLAGS libtimidity/src/*.c
 
 # Include the freepats config in the published package so `brfs` can inline it
 # cp node_modules/freepats/freepats.cfg freepats.cfg
+
+# Enhance the source maps for libtimidity.debug.js
+node tools/enhance-source-map.js
+
+mv libtimidity.wasm build/
+mv libtimidity.debug.wasm build/
+mv libtimidity.debug.wasm.map build/

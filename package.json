@@ -1,7 +1,7 @@
 {
   "name": "timidity",
   "description": "Play MIDI files in the browser w/ Web Audio, WebAssembly, and libtimidity",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "author": {
     "name": "Feross Aboukhadijeh",
     "email": "feross@feross.org",
@@ -63,5 +63,19 @@
     "ignore": [
       "libtimidity.js"
     ]
-  }
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/feross"
+    },
+    {
+      "type": "patreon",
+      "url": "https://www.patreon.com/feross"
+    },
+    {
+      "type": "consulting",
+      "url": "https://feross.org/support"
+    }
+  ]
 }
