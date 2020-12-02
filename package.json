@@ -52,7 +52,6 @@
   "scripts": {
     "setup-emsdk": "source ~/emsdk/emsdk_env.sh",
     "make-patches": "node ./tools/make-patch-folder.js",
-    "make-gzip-patches": "node ./tools/make-patch-folder.js -z",
     "pyserver": "cd ./build/ && python ../tools/pyserver.py",
     "build": "./tools/build.sh",
     "download": "./tools/download.sh",

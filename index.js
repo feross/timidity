@@ -28,8 +28,8 @@ class Timidity extends EventEmitter {
 		super();
 
 		options = Object.assign({},defaultOptions,options);
-		let baseUrl = options.baseUrl || defaultOptions.baseUrl;
-		let patUrl = options.patUrl || defaultOptions.patUrl;
+		let baseUrl = options.baseUrl;
+		let patUrl = options.patUrl;
 
 		this.destroyed = false;
 
@@ -76,7 +76,6 @@ class Timidity extends EventEmitter {
 		this._node.connect(this._audioContext.destination);
 
 		LibTimidity({ locateFile: file => {
-			console.log(`in LibTimidity locateFile (${file})`);
 			return new URL(file, this._baseUrl).href
 		}}).then(lib => this._onLibReady(lib));
 	}
