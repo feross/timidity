@@ -25,11 +25,11 @@ const defaultOptions = {
 
 class Timidity extends EventEmitter {
 	constructor(options = {}) {
-		super();
-
 		options = Object.assign({},defaultOptions,options);
 		let baseUrl = options.baseUrl;
 		let patUrl = options.patUrl;
+
+		super();
 
 		this.destroyed = false;
 

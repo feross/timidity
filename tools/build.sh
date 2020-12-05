@@ -19,7 +19,3 @@ emcc -o libtimidity.debug.js $OPTIMIZE_FLAGS_DEBUG $BUILD_FLAGS libtimidity/src/
 
 # Enhance the source maps for libtimidity.debug.js
 node tools/enhance-source-map.js
-
-mv libtimidity.wasm build/
-mv libtimidity.debug.wasm build/
-mv libtimidity.debug.wasm.map build/

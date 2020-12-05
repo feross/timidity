@@ -1,5 +1,5 @@
+libtimidity.debug.js
+libtimidity.debug.wasm
+libtimidity.debug.wasm.map
 node_modules/
-/build/pat/
-/build/libtimidity.debug.js
-/build/libtimidity.debug.wasm
-/build/libtimidity.debug.wasm.map
+/build/

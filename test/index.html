@@ -5,7 +5,7 @@
 <title>Timidity Test</title>
 </head>
 <body>
-<script src="timidity.min.js"></script>
+<script src="https://cdn.noteworthycomposer.org/timidity/timidity.js"></script>
 <button id="playBtn">Start</button>
 <script>
 	let player = null;
@@ -15,7 +15,7 @@
 	btn.onclick = function() {
 		console.log('button clicked');
 		if (!player) {
-			player = new Timidity({baseUrl: '/'});
+			player = new Timidity();
 			player.on('ended', () => {
 				playing = false;
 				btn.innerText = 'Play';

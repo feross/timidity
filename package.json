@@ -21,11 +21,11 @@
     "freepats": "^1.0.1"
   },
   "devDependencies": {
-    "babel-minify": "^0.5.1",
     "browserify": "^16.2.2",
     "gzipme": "^1.0.0",
     "minimist": "^1.2.5",
-    "standard": "*"
+    "standard": "*",
+    "uglifyify": "^5.0.2"
   },
   "homepage": "https://bitmidi.com",
   "keywords": [
@@ -52,11 +52,10 @@
   "scripts": {
     "setup-emsdk": "source ~/emsdk/emsdk_env.sh",
     "make-patches": "node ./tools/make-patch-folder.js",
-    "pyserver": "cd ./build/ && python ../tools/pyserver.py",
+    "test": "cd ./test/ && python ../tools/pyserver.py",
     "build": "./tools/build.sh",
     "download": "./tools/download.sh",
-    "pkgbld": "npx browserify index.js -o build/timidity.js",
-    "pkgmin": "npx minify build/timidity.js --outFile build/timidity.min.js"
+    "pkgbld": "node ./tools/build-package.js"
   },
   "standard": {
     "ignore": [
