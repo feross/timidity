@@ -9,7 +9,7 @@ const debugVerbose = Debug('timidity:verbose');
 // Inlined at build time by 'brfs' browserify transform
 const TIMIDITY_CFG = fs.readFileSync('pats.cfg', 'utf8');
 
-const SAMPLE_RATE = 44100;
+const DEFAULT_SAMPLE_RATE = 44100; // the audioContext.sampleRate will override this
 const AUDIO_FORMAT = 0x8010; // format of the rendered audio 's16'
 const NUM_CHANNELS = 2; // stereo (2 channels)
 const BYTES_PER_SAMPLE = 2 * NUM_CHANNELS;
@@ -178,7 +178,7 @@ class Timidity extends EventEmitter {
 
 	_loadSong(midiBuf) {
 		const optsPtr = this._lib._mid_alloc_options(
-			SAMPLE_RATE,
+			this._audioContext.sampleRate || DEFAULT_SAMPLE_RATE,
 			AUDIO_FORMAT,
 			NUM_CHANNELS,
 			BUFFER_SIZE
