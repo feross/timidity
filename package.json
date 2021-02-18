@@ -1,6 +1,7 @@
 {
   "name": "phaser-timidity-plugin",
   "description": "self contained midi player with easyish patch editing, for phaser, forked from feross's wasm timidity",
+  "version": "0.0.1",
   "author": {
     "name": "Feross Aboukhadijeh",
     "email": "feross@feross.org",
