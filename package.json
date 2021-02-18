@@ -43,7 +43,7 @@
     "webassembly"
   ],
   "license": "MIT",
-  "main": "indexx.js",
+  "main": "bundle.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/feross/timidity.git"
