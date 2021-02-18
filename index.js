@@ -9,7 +9,7 @@ const debugVerbose = Debug('timidity:verbose')
 
 // Inlined at build time by 'brfs' browserify transform
 const TIMIDITY_CFG = fs.readFileSync(
-  __dirname + '/freepats.cfg', // eslint-disable-line node/no-path-concat
+  __dirname + '/gravis.cfg', // eslint-disable-line node/no-path-concat
   'utf8'
 )
 
@@ -196,6 +196,10 @@ class Timidity extends EventEmitter {
       // the existing promise to prevent duplicate fetches.
       return this._pendingFetches[instrument]
     }
+    const re = /(?:\.([^.]+))?$/
+
+    //ensure pat extension
+    if (re.exec(instrument) !== 'pat') instrument = instrument + '.pat'
 
     const url = new URL(instrument, this._baseUrl)
     const bufPromise = this._fetch(url)
