@@ -2,3 +2,4 @@ libtimidity.debug.js
 libtimidity.debug.wasm
 libtimidity.debug.wasm.map
 node_modules/
+*.sf2
