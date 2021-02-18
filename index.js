@@ -9,7 +9,7 @@ const debugVerbose = Debug('timidity:verbose')
 
 // Inlined at build time by 'brfs' browserify transform
 const TIMIDITY_CFG = fs.readFileSync(
-  __dirname + '/gravis.cfg', // eslint-disable-line node/no-path-concat
+  __dirname + '/patches/gravis.cfg', // eslint-disable-line node/no-path-concat
   'utf8'
 )
 

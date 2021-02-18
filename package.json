@@ -52,7 +52,8 @@
     "build": "./tools/build.sh",
     "download": "./tools/download.sh",
     "size": "npm run build && cat libtimidity.wasm | gzip | wc -c && browserify -r . | minify | gzip | wc -c",
-    "test": "standard"
+    "test": "standard",
+    "bundle":"rollup -c rollup.config.js"
   },
   "standard": {
     "ignore": [
