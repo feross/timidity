@@ -49,11 +49,13 @@
     "url": "git://github.com/feross/timidity.git"
   },
   "scripts": {
-    "build": "./tools/build.sh",
+    "buildLib": "./tools/build.sh",
     "download": "./tools/download.sh",
     "size": "npm run build && cat libtimidity.wasm | gzip | wc -c && browserify -r . | minify | gzip | wc -c",
     "test": "standard",
-    "bundle":"rollup -c rollup.config.js"
+    "bundle":"rollup -c rollup.config.js",
+    "buildPatches": "unsf/build/unsf -v -O patches/ patches/gravis.sf2",
+    "build": "npm run buildPatches && npm run bundle"
   },
   "standard": {
     "ignore": [
