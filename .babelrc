@@ -1,0 +1,24 @@
+{
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "loose": true
+            }
+        ]
+               ],
+    "plugins": [
+        [
+            "@babel/plugin-transform-runtime",
+            {
+                "regenerator": true
+            }
+        ],
+        [
+            "babel-plugin-static-fs",
+            {
+                target: "browser"
+            }
+        ]
+    ]
+}
