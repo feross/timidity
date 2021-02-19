@@ -36,11 +36,15 @@
   var Timidity = /*#__PURE__*/function (_EventEmitter) {
     _inheritsLoose__default['default'](Timidity, _EventEmitter);
 
-    function Timidity(baseUrl) {
+    function Timidity(baseUrl, audioContext) {
       var _this;
 
       if (baseUrl === void 0) {
         baseUrl = '/';
+      }
+
+      if (audioContext === void 0) {
+        audioContext = new AudioContext();
       }
 
       _this = _EventEmitter.call(this) || this;
@@ -62,7 +66,7 @@
       // handler, then the AudioContext will be suspended. See:
       // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
 
-      _this._audioContext = new AudioContext(); // Start the 'onaudioprocess' events flowing
+      _this._audioContext = audioContext; // Start the 'onaudioprocess' events flowing
 
       _this._node = _this._audioContext.createScriptProcessor(BUFFER_SIZE, 0, NUM_CHANNELS);
       _this._onAudioProcess = _this._onAudioProcess.bind(_assertThisInitialized__default['default'](_this));
@@ -571,6 +575,11 @@
       get: function get() {
         if (this.destroyed || !this._songPtr) return 1;
         return this._lib._mid_song_get_total_time(this._songPtr) / 1000;
+      }
+    }, {
+      key: "node",
+      get: function get() {
+        return this._node;
       }
     }]);
 
