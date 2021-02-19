@@ -23,7 +23,7 @@ const AudioContext = typeof window !== 'undefined' &&
   (window.AudioContext || window.webkitAudioContext)
 
 class Timidity extends EventEmitter {
-  constructor (baseUrl = '/') {
+  constructor (baseUrl = '/', audioContext = new AudioContext()) {
     super()
 
     this.destroyed = false
@@ -46,7 +46,7 @@ class Timidity extends EventEmitter {
     // If the Timidity constructor was not invoked inside a user-initiated event
     // handler, then the AudioContext will be suspended. See:
     // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
-    this._audioContext = new AudioContext()
+    this._audioContext = audioContext
 
     // Start the 'onaudioprocess' events flowing
     this._node = this._audioContext.createScriptProcessor(
