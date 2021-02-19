@@ -403,6 +403,10 @@ class Timidity extends EventEmitter {
     this._lib._mid_song_free(this._songPtr)
     this._songPtr = 0
   }
+
+  get node () {
+    return this._node
+  }
 }
 
 module.exports = Timidity
