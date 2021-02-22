@@ -1,11 +1,8 @@
 /*! timidity. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 import fs from 'fs'
-import * as Debug from 'debug'
+import URL from 'url'
 import EventEmitter from 'events'
-const LibTimidity = require('./libtimidity')
-
-const debug = Debug('timidity')
-const debugVerbose = Debug('timidity:verbose')
+import LibTimidity from './libtimidity'
 
 // Inlined at build time by 'brfs' browserify transform
 const TIMIDITY_CFG = fs.readFileSync(
@@ -19,11 +16,8 @@ const NUM_CHANNELS = 2 // stereo (2 channels)
 const BYTES_PER_SAMPLE = 2 * NUM_CHANNELS
 const BUFFER_SIZE = 16384 // buffer size for each render() call
 
-const AudioContext = typeof window !== 'undefined' &&
-  (window.AudioContext || window.webkitAudioContext)
-
 export default class Timidity extends EventEmitter {
-  constructor (baseUrl = '/', audioContext = new AudioContext()) {
+  constructor (baseUrl = '/') {
     super()
 
     this.destroyed = false
@@ -67,18 +61,15 @@ export default class Timidity extends EventEmitter {
 
     this._bufferPtr = this._lib._malloc(BUFFER_SIZE * BYTES_PER_SAMPLE)
 
-    debugVerbose('Initialized libtimidity')
     this._ready = true
     this.emit('_ready')
   }
 
   async load (urlOrBuf) {
-    debug('load %o', urlOrBuf)
     if (this.destroyed) throw new Error('load() called after destroy()')
 
     // If the Timidity constructor was not invoked inside a user-initiated event
     // handler, then the AudioContext will be suspended. Attempt to resume it.
-    this._audioContext.resume()
 
     // If a song already exists, destroy it before starting a new one
     if (this._songPtr) this._destroySong()
@@ -111,7 +102,6 @@ export default class Timidity extends EventEmitter {
     let missingCount = this._lib._mid_get_load_request_count(songPtr)
     if (missingCount > 0) {
       let missingInstruments = this._getMissingInstruments(songPtr, missingCount)
-      debugVerbose('Fetching instruments: %o', missingInstruments)
 
       // Wait for all instruments to load
       await Promise.all(
@@ -132,13 +122,11 @@ export default class Timidity extends EventEmitter {
       // Print out missing instrument names
       if (missingCount > 0) {
         missingInstruments = this._getMissingInstruments(songPtr, missingCount)
-        debug('Playing with missing instruments: %o', missingInstruments)
       }
     }
 
     this._songPtr = songPtr
     this._lib._mid_song_start(this._songPtr)
-    debugVerbose('Song and instruments are loaded')
   }
 
   _getMissingInstruments (songPtr, missingCount) {
@@ -239,12 +227,10 @@ export default class Timidity extends EventEmitter {
   }
 
   play () {
-    debug('play')
     if (this.destroyed) throw new Error('play() called after destroy()')
 
     // If the Timidity constructor was not invoked inside a user-initiated event
     // handler, then the AudioContext will be suspended. Attempt to resume it.
-    this._audioContext.resume()
 
     this._playing = true
     if (this._ready && !this._currentUrlOrBuf) {
@@ -307,7 +293,6 @@ export default class Timidity extends EventEmitter {
   }
 
   pause () {
-    debug('pause')
     if (this.destroyed) throw new Error('pause() called after destroy()')
 
     this._playing = false
@@ -316,7 +301,6 @@ export default class Timidity extends EventEmitter {
   }
 
   seek (time) {
-    debug('seek %d', time)
     if (this.destroyed) throw new Error('seek() called after destroy()')
     if (!this._songPtr) return // ignore seek if there is no song loaded yet
 
@@ -355,7 +339,6 @@ export default class Timidity extends EventEmitter {
   }
 
   destroy () {
-    debug('destroy')
     if (this.destroyed) throw new Error('destroy() called after destroy()')
     this._destroy()
   }
@@ -382,12 +365,8 @@ export default class Timidity extends EventEmitter {
       this._node.removeEventListener('audioprocess', this._onAudioProcess)
     }
 
-    if (this._audioContext) {
-      this._audioContext.close()
-    }
 
     if (err) this.emit('error', err)
-    debug('destroyed (err %o)', err)
   }
 
   _destroySong () {
