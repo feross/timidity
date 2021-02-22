@@ -3,3 +3,7 @@ libtimidity.debug.wasm
 libtimidity.debug.wasm.map
 node_modules/
 *.sf2
+.log/
+*.lock
+yarn-error.log
+package-lock.json
