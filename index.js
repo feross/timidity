@@ -1,7 +1,7 @@
 /*! timidity. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
-const Debug = require('debug')
-const EventEmitter = require('events').EventEmitter
-const fs = require('fs')
+import fs from 'fs'
+import * as Debug from 'debug'
+import EventEmitter from 'events'
 const LibTimidity = require('./libtimidity')
 
 const debug = Debug('timidity')
@@ -22,7 +22,7 @@ const BUFFER_SIZE = 16384 // buffer size for each render() call
 const AudioContext = typeof window !== 'undefined' &&
   (window.AudioContext || window.webkitAudioContext)
 
-class Timidity extends EventEmitter {
+export default class Timidity extends EventEmitter {
   constructor (baseUrl = '/', audioContext = new AudioContext()) {
     super()
 
@@ -46,17 +46,8 @@ class Timidity extends EventEmitter {
     // If the Timidity constructor was not invoked inside a user-initiated event
     // handler, then the AudioContext will be suspended. See:
     // https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
-    this._audioContext = audioContext
 
     // Start the 'onaudioprocess' events flowing
-    this._node = this._audioContext.createScriptProcessor(
-      BUFFER_SIZE,
-      0,
-      NUM_CHANNELS
-    )
-    this._onAudioProcess = this._onAudioProcess.bind(this)
-    this._node.addEventListener('audioprocess', this._onAudioProcess)
-    this._node.connect(this._audioContext.destination)
 
     LibTimidity({
       locateFile: file => new URL(file, this._baseUrl).href
@@ -408,5 +399,3 @@ class Timidity extends EventEmitter {
     return this._node
   }
 }
-
-module.exports = Timidity

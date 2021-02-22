@@ -20,3 +20,8 @@ yarn run build
 to rextract pat files compatible with timidity, as well as rebuild the library for those instruments.
 
 in the application, you need to host both `libtimidity` files (js and wasm) as well as the pat folders
+
+
+## audioworkletprocessornotes
+
+look [here](https://github.com/cutterbl/soundtouchjs-audio-worklet/blob/master/src/SoundTouchWorklet.js) and in the babel/rollup configs there

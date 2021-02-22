@@ -18,6 +18,7 @@
     "@babel/plugin-transform-runtime": "^7.12.15",
     "@babel/preset-env": "^7.12.16",
     "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^17.1.0",
     "@rollup/plugin-node-resolve": "^11.2.0",
     "babel-minify": "^0.5.1",
     "babel-plugin-static-fs": "^3.0.0",
