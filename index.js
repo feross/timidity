@@ -196,10 +196,10 @@ class Timidity extends EventEmitter {
       // the existing promise to prevent duplicate fetches.
       return this._pendingFetches[instrument]
     }
-    const re = /(?:\.([^.]+))?$/
 
-    //ensure pat extension
-    if (re.exec(instrument) !== 'pat') instrument = instrument + '.pat'
+    // ensure pat extension
+    const extRegex = /(?:\.([^.]+))?$/
+    if (extRegex.exec(instrument) !== 'pat') instrument = instrument + '.pat'
 
     const url = new URL(instrument, this._baseUrl)
     const bufPromise = this._fetch(url)

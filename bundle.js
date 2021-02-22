@@ -289,7 +289,7 @@
 
     _proto._fetchInstrument = /*#__PURE__*/function () {
       var _fetchInstrument2 = _asyncToGenerator__default['default']( /*#__PURE__*/_regeneratorRuntime__default['default'].mark(function _callee2(instrument) {
-        var re, url, bufPromise, buf;
+        var extRegex, url, bufPromise, buf;
         return _regeneratorRuntime__default['default'].wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -302,9 +302,9 @@
                 return _context2.abrupt("return", this._pendingFetches[instrument]);
 
               case 2:
-                re = /(?:\.([^.]+))?$/; //ensure pat extension
-
-                if (re.exec(instrument) !== 'pat') instrument = instrument + '.pat';
+                // ensure pat extension
+                extRegex = /(?:\.([^.]+))?$/;
+                if (extRegex.exec(instrument) !== 'pat') instrument = instrument + '.pat';
                 url = new URL(instrument, this._baseUrl);
                 bufPromise = this._fetch(url);
                 this._pendingFetches[instrument] = bufPromise;
