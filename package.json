@@ -28,7 +28,8 @@
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.3.1"
+    "eslint-plugin-promise": "^4.3.1",
+    "url-parse": "^1.5.1"
   },
   "homepage": "https://bitmidi.com",
   "keywords": [

@@ -25,3 +25,6 @@ in the application, you need to host both `libtimidity` files (js and wasm) as w
 ## audioworkletprocessornotes
 
 look [here](https://github.com/cutterbl/soundtouchjs-audio-worklet/blob/master/src/SoundTouchWorklet.js) and in the babel/rollup configs there
+
+## Possible workflow here:
+Following [this stuff](https://github.com/emscripten-core/emscripten/issues/6230), we will focus on making a processor _within_ the wasm module, which is instantiated with options that point to the midifile, and preregistered in the AudioContextGlobalScope.  But, it seems like a good idea to first bundle/rollup this 'post.js' file.  So the file will be bundled, then we will have the file rebuilt.  Then you just need to `acontext.addModule($thefullsinglefilewasmjs)` and 

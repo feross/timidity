@@ -1,6 +1,6 @@
 /*! timidity. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 import fs from 'fs'
-import URL from 'url'
+import URL from 'url-parse'
 import EventEmitter from 'events'
 import LibTimidity from './libtimidity'
 
@@ -23,7 +23,7 @@ export default class Timidity extends EventEmitter {
     this.destroyed = false
 
     if (!baseUrl.endsWith('/')) baseUrl += '/'
-    this._baseUrl = new URL(baseUrl, window.location.origin).href
+    this._baseUrl = new URL(baseUrl).href
 
     this._ready = false
     this._playing = false
