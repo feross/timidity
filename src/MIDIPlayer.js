@@ -1,21 +1,27 @@
+// import "core-js/stable"
+// import "regenerator-runtime/runtime"
 
-const acontext = new AudioContext()
-const baseURL = '/'
-document.querySelector('.stopbutton').addEventListener('click',  function () {
-  acontext.suspend()
-})
+class MIDIPlayer {
+  constructor(worklet){
+    this._worklet = worklet
+  }
 
-document.querySelector('.playbutton').addEventListener('click', async function () {
-  const buf = await fetchBuff('desert3.mid')
-  acontext.resume().then(() => {
-    console.log('Playback resumed successfully')
-    const midiPlayer = new AudioWorkletNode(acontext, 'midiplayer', {
-      outputChannelCount: [2],
-      processorOptions: {
-        baseURL: baseURL,
-        midiBuff: buf
-      }
-    })
+  play(){
+    this._worklet.postMessage("play")
+  }
+}
+
+export async function createMIDIPlayer(midifile, baseURL = '/', acontext = new AudioContext()){
+  await acontext.audioWorklet.addModule('worklet-bundle.js')
+  const buf = await fetchBuff(midifile)
+  const midiPlayer = new AudioWorkletNode(acontext, 'midiplayer', {
+    outputChannelCount: [2],
+    processorOptions: {
+      baseURL: baseURL,
+      midiBuff: buf
+    }
+  })
+  await new Promise((res,rej)=>{
     midiPlayer.port.onmessage = async message => {
       if (message.data.type === 'missingInstruments') {
         let instBuffs=[]
@@ -25,23 +31,21 @@ document.querySelector('.playbutton').addEventListener('click', async function (
           }))
         } catch (err) {
           // Do something
-          throw new Error(err)
+          rej(err)
         }
         console.log(instBuffs)
         midiPlayer.port.postMessage({type: 'instPayload', buffs: instBuffs})
+        res()
         // const instBuff = await fetchBuff(message.data.url)
       }
-      console.log(message)
     }
-    midiPlayer.connect(acontext.destination)
   })
-})
+  midiPlayer.port.onmessage = () => {}
+  return new MIDIPlayer(midiPlayer)
+}
 
-acontext.audioWorklet.addModule('libtimidity.js').then(res => {
-  console.log('do we get hereeee?')
-})
 
-async function fetchInstrument(instrument){
+async function fetchInstrument(instrument) {
   let path = instrument
   const extRegex = /(?:\.([^.]+))?$/
   if (extRegex.exec(instrument) !== 'pat') path = instrument + '.pat'

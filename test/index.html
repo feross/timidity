@@ -24,6 +24,18 @@
     <div class="container was-page-wrap"></div>
     <button class="playbutton">Play</button>
     <button class="stopbutton">Post</button>
-    <script src='tester.js'></script>
+    <!-- <script src='tester.js'></script> -->
+    <script type="module">
+     import { createMIDIPlayer } from './player-bundle.js'
+     const acontext = new AudioContext()
+     const player = createMIDIPlayer('blue.mid', '/', acontext)
+     document.querySelector('.stopbutton').addEventListener('click',  function () {
+       acontext.suspend()
+     })
+
+     document.querySelector('.playbutton').addEventListener('click', async function () {
+       player.play()
+     })
+    </script>
   </body>
 </html>

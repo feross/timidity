@@ -1,4 +1,4 @@
-// import LibTimidity from './libtimidity'
+import LibTimidity from '../wasm/libtimidity'
 import 'regenerator-runtime/runtime'
 import fs from 'fs'
 import URL from 'url-parse'
@@ -6,11 +6,11 @@ import URL from 'url-parse'
 
 // Inlined at build time by 'brfs' browserify transform
 const TIMIDITY_CFG = fs.readFileSync(
-  __dirname + '/patches/gravis.cfg', // eslint-disable-line node/no-path-concat
+  '../patches/gravis.cfg', // eslint-disable-line node/no-path-concat
   'utf8'
 )
 
-const SAMPLE_RATE = 44100
+// const SAMPLE_RATE = 44100
 const AUDIO_FORMAT = 0x8010 // format of the rendered audio 's16'
 const NUM_CHANNELS = 2 // stereo (2 channels)
 const BYTES_PER_SAMPLE = 2 * NUM_CHANNELS
@@ -28,8 +28,6 @@ registerProcessor('midiplayer', class extends AudioWorkletProcessor {
     this._songPtr = 0
     this._bufferPtr = 0
     this._array = new Int16Array(BUFFER_SIZE * 2)
-    this._currentUrlOrBuf = null // currently loading url or buf
-    this._interval = null
 
     this.oncer=true
 
@@ -62,7 +60,12 @@ registerProcessor('midiplayer', class extends AudioWorkletProcessor {
       this._lib._mid_song_free(this._songPtr)
       this._songPtr = await this._loadSong(this._midiBuf)
       this._lib._mid_song_start(this._songPtr)
+    } else if (message.data === 'play'){
       this._playing = true
+    } else if ( message.data.type === 'seek' ){
+      this.seek(message.data.sec)
+    } else if ( message.data === 'pause' ){
+      this.pause()
     }
   }
 
@@ -70,27 +73,25 @@ registerProcessor('midiplayer', class extends AudioWorkletProcessor {
     // Are we missing instrument files?
     let missingCount = this._lib._mid_get_load_request_count(songPtr)
     if (missingCount > 0) {
-      let missingInstruments = this._getMissingInstruments(songPtr, missingCount)
 
+      const missingInstruments = []
+      for (let i = 0; i < missingCount; i++) {
+        const instrumentPtr = this._lib._mid_get_load_request(songPtr, i)
+        const instrument = this._lib.UTF8ToString(instrumentPtr)
+        missingInstruments.push(instrument)
+      }
+      return missingInstruments
       // Request instruments to be fetched from the main thread
       // missingInstruments.map(instrument => this._reqInstrument(instrument))
-      this.port.postMessage({type:'missingInstruments', instruments: missingInstruments})
+      this.port.postMessage({ type: 'missingInstruments', instruments: missingInstruments })
     }
   }
 
-  _getMissingInstruments(songPtr, missingCount) {
-    const missingInstruments = []
-    for (let i = 0; i < missingCount; i++) {
-      const instrumentPtr = this._lib._mid_get_load_request(songPtr, i)
-      const instrument = this._lib.UTF8ToString(instrumentPtr)
-      missingInstruments.push(instrument)
-    }
-    return missingInstruments
-  }
 
   async _loadSong(midiBuf) {
     const optsPtr = this._lib._mid_alloc_options(
-      SAMPLE_RATE,
+      // sampleRate from AudioWorkletGlobalScope
+      sampleRate,
       AUDIO_FORMAT,
       NUM_CHANNELS,
       BUFFER_SIZE
@@ -139,7 +140,7 @@ registerProcessor('midiplayer', class extends AudioWorkletProcessor {
     }
   }
 
-  _onAudioProcess (outputs) {
+  _onAudioProcess(outputs) {
     const sampleCount = (this._songPtr && this._playing)
       ? this._readMidiData()
       : 0
@@ -149,7 +150,7 @@ registerProcessor('midiplayer', class extends AudioWorkletProcessor {
     //   this.emit('playing')
     //   this._startInterval()
     // }
-    if(this.oncer){
+    if (this.oncer) {
       this.port.postMessage(sampleCount)
       this.port.postMessage(outputs[0][0].length)
       this.oncer = false
@@ -174,10 +175,9 @@ registerProcessor('midiplayer', class extends AudioWorkletProcessor {
     //   this._lib._mid_song_start(this._songPtr)
     //   // this.emit('ended')
     // }
-    return outputs
   }
 
-  _readMidiData () {
+  _readMidiData() {
     const byteCount = this._lib._mid_song_read_wave(
       this._songPtr,
       this._bufferPtr,
@@ -197,7 +197,7 @@ registerProcessor('midiplayer', class extends AudioWorkletProcessor {
   }
 
   process(inputs, outputs, params) {
-    if( this._playing ){
+    if (this._playing) {
       outputs = this._onAudioProcess(outputs)
     }
     return true
@@ -216,4 +216,15 @@ registerProcessor('midiplayer', class extends AudioWorkletProcessor {
   //   return true;
   // }
 
+  pause () {
+    // if (this.destroyed) throw new Error('pause() called after destroy()')
+    this._playing = false
+  }
+
+  seek (time) {
+    if (!this._songPtr) return // ignore seek if there is no song loaded yet
+
+    const timeMs = Math.floor(time * 1000)
+    this._lib._mid_song_seek(this._songPtr, timeMs)
+  }
 })
