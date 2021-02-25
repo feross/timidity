@@ -27,17 +27,17 @@
     <button class="stopbutton">Pause</button>
     <!-- <script src='tester.js'></script> -->
     <script type="module">
-     import { createMIDIPlayer } from './player-bundle.js'
+     import MIDI from './player-bundle.js'
      // fetchText('./gravis.cfg').then((txt)=>console.log(txt))
      // console.log(createURL('./test/yeah/gravis.cfg'))
 
 
      const acontext = new AudioContext()
-     createMIDIPlayer('/gravis.cfg', acontext).then( player =>{
+     MIDI.createMIDIPlayer('folder/test/gravis.cfg', acontext).then( player =>{
        console.log('done!')
 
        document.querySelector('.loadbutton').addEventListener('click', async function () {
-         player.load('videogames.mid')
+         player.load('folder/videogames.mid')
        })
        document.querySelector('.stopbutton').addEventListener('click',  function () {
          player.pause()

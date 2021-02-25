@@ -122,6 +122,7 @@ registerProcessor('midiplayer', class extends AudioWorkletProcessor {
       .slice(0, -1) // remove basename
       .join('/')
     this._mkdirp(folderPath)
+    this.port.postMessage(folderPath)
     this._lib.FS.writeFile(instrument, buf, { encoding: 'binary' })
   }
 
