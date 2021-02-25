@@ -1,7 +1,20 @@
-# phaser-midi
+# Timidity w/ AudioWorkletProcessor
 
 This is forked from [timidity](https://github.com/feross/timidity) 
 
+# instructions
+
+``` javascript
+import MIDI from 'dist/player-bundle.js'
+
+const player = MIDI.createMIDIPlayer(`you timidity config file`) //same directory as pats
+await player.load('midifile.mid') // async
+player.play()
+player.seek(seconds)
+player.pause()
+```
+
+# building pats from sf2s
 [unsf](https://github.com/psi29a/unsf) is included as a submodule for easy editing and updating of the instrument patches.  To build:
 
 ``` sh
