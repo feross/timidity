@@ -14,6 +14,7 @@ emcc -o wasm/libtimidity.debug.js $OPTIMIZE_FLAGS_DEBUG $BUILD_FLAGS libtimidity
 
 # Include the freepats config in the published package so `brfs` can inline it
 # cp node_modules/freepats/freepats.cfg freepats.cfg
+# cp patches/gravis.cfg src/gravis.cfg
 
 # Enhance the source maps for libtimidity.debug.js
-# node tools/enhance-source-map.js
+node tools/enhance-source-map.js

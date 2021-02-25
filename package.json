@@ -12,11 +12,13 @@
   },
   "dependencies": {
     "@rollup/plugin-alias": "^3.1.2",
+    "@rollup/plugin-replace": "^2.4.1",
     "debug": "^4.1.1",
     "native-url": "^0.3.4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/plugin-transform-runtime": "^7.12.15",
     "@babel/preset-env": "^7.12.16",
     "@rollup/plugin-babel": "^5.3.0",
@@ -29,6 +31,7 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
+    "rollup": "^2.39.1",
     "url-parse": "^1.5.1"
   },
   "homepage": "https://bitmidi.com",
@@ -58,7 +61,7 @@
     "download": "./tools/download.sh",
     "size": "npm run build && cat libtimidity.wasm | gzip | wc -c && browserify -r . | minify | gzip | wc -c",
     "test": "standard",
-    "bundle": "rollup -c rollup.config.js",
+    "bundle": "rollup -c rollup.bundle.js",
     "buildPatches": "unsf/build/unsf -v -O patches/ patches/gravis.sf2",
     "build": "npm run buildPatches && npm run bundle"
   },

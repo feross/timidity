@@ -2,7 +2,9 @@
 import babel from '@rollup/plugin-babel'
 import path from 'path'
 import resolve from '@rollup/plugin-node-resolve'
+// import replace from '@rollup/plugin-replace'
 import commonjs from '@rollup/plugin-commonjs'
+import fs from 'fs'
 
 export default [
   {
@@ -15,6 +17,9 @@ export default [
       }
     ],
     plugins: [
+      // replace({
+      //   'TIMIDITYCFG': fs.readFileSync('')
+      // }),
       resolve({
         browser: true,
         preferBuiltins: false
@@ -26,7 +31,7 @@ export default [
       })
     ]
   },
-  {
+{
     input: 'src/MIDIPlayer.js',
     output: [
       {

@@ -22,19 +22,31 @@
   </head>
   <body>
     <div class="container was-page-wrap"></div>
+    <button class="loadbutton">Load</button>
     <button class="playbutton">Play</button>
-    <button class="stopbutton">Post</button>
+    <button class="stopbutton">Pause</button>
     <!-- <script src='tester.js'></script> -->
     <script type="module">
      import { createMIDIPlayer } from './player-bundle.js'
-     const acontext = new AudioContext()
-     const player = createMIDIPlayer('blue.mid', '/', acontext)
-     document.querySelector('.stopbutton').addEventListener('click',  function () {
-       acontext.suspend()
-     })
+     // fetchText('./gravis.cfg').then((txt)=>console.log(txt))
+     // console.log(createURL('./test/yeah/gravis.cfg'))
 
-     document.querySelector('.playbutton').addEventListener('click', async function () {
-       player.play()
+
+     const acontext = new AudioContext()
+     createMIDIPlayer('/gravis.cfg', acontext).then( player =>{
+       console.log('done!')
+
+       document.querySelector('.loadbutton').addEventListener('click', async function () {
+         player.load('videogames.mid')
+       })
+       document.querySelector('.stopbutton').addEventListener('click',  function () {
+         player.pause()
+       })
+
+       document.querySelector('.playbutton').addEventListener('click', async function () {
+         console.log(player)
+         player.play()
+       })
      })
     </script>
   </body>
