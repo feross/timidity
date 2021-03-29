@@ -33,11 +33,11 @@
 
 
      const acontext = new AudioContext()
-     MIDI.createMIDIPlayer('folder/test/gravis.cfg', acontext).then( player =>{
+     MIDI.createMIDIPlayer('gravisPats/gravis.cfg', acontext).then( player =>{
        console.log('done!')
 
        document.querySelector('.loadbutton').addEventListener('click', async function () {
-         player.load('folder/videogames.mid')
+         player.load('exitmusic.mid')
        })
        document.querySelector('.stopbutton').addEventListener('click',  function () {
          player.pause()

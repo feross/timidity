@@ -143,11 +143,6 @@ registerProcessor('midiplayer', class extends AudioWorkletProcessor {
       ? this._readMidiData()
       : 0
 
-    if (this.oncer) {
-      this.port.postMessage(sampleCount)
-      this.port.postMessage(outputs[0][0].length)
-      this.oncer = false
-    }
     const output0 = outputs[0][0]
     const output1 = outputs[0][1]
 
@@ -217,8 +212,6 @@ registerProcessor('midiplayer', class extends AudioWorkletProcessor {
     if (this.destroyed) return
     this.destroyed = true
 
-    this._stopInterval()
-
     this._array = null
 
     if (this._songPtr) {
@@ -230,7 +223,7 @@ registerProcessor('midiplayer', class extends AudioWorkletProcessor {
       this._bufferPtr = 0
     }
 
-    if (err) this.emit('error', err)
+    if (err) throw new Error('error', err)
   }
 
   _destroySong () {

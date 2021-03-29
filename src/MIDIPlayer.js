@@ -19,7 +19,7 @@ export default class MIDIPlayer extends EventEmitter {
   }
 
   async _handleMessage(message) {
-    console.log(message)
+    // console.log(message)
     if (message.data.type === 'missingInstruments') {
       let instBuffs = []
       try {
@@ -31,7 +31,7 @@ export default class MIDIPlayer extends EventEmitter {
         console.log('Error loading instrument patch files')
         console.log(err)
       }
-      console.log(instBuffs)
+      // console.log(instBuffs)
       this._worklet.port.postMessage({ type: 'instPayload', buffs: instBuffs })
     }
   }
@@ -51,7 +51,7 @@ export default class MIDIPlayer extends EventEmitter {
 
   load(midiURL) {
     fetchBuff(midiURL).then(buff => {
-      console.log(buff)
+      // console.log(buff)
       this._worklet.port.postMessage({
         type: 'loadMIDI',
         midiBuff: buff
@@ -61,14 +61,11 @@ export default class MIDIPlayer extends EventEmitter {
 
   static async createMIDIPlayer(timidityCfgURL = '/gravis.cfg', acontext = new AudioContext()) {
     await acontext.audioWorklet.addModule(`worklet-bundle.js`)
-    console.log('got module')
     const timidityCfg = await fetchText(timidityCfgURL)
     let baseURL = timidityCfgURL.substring(0, timidityCfgURL.lastIndexOf("/") + 1);
     if (baseURL.length === 0) baseURL = '/'
 
 
-    console.log('got cfg and path')
-    console.log(baseURL)
     const workletNode = new AudioWorkletNode(acontext, 'midiplayer', {
       outputChannelCount: [2],
       processorOptions: {
@@ -76,12 +73,11 @@ export default class MIDIPlayer extends EventEmitter {
         timidityCfg: timidityCfg
       }
     })
-    console.log('got node')
     return new MIDIPlayer(workletNode, acontext, baseURL)
   }
 
   async fetchInstrument(instrument) {
-    let path = this._baseURL+instrument
+    let path = this._baseURL + instrument
     const extRegex = /(?:\.([^.]+))?$/
     if (extRegex.exec(instrument) !== 'pat') path = this._baseURL + instrument + '.pat'
     return { instrumentName: instrument, instrumentBuff: await fetchBuff(path) }
