@@ -1,9 +1,9 @@
 {
   "name": "phaser-timidity-plugin",
   "description": "self contained midi player with easyish patch editing, for phaser, forked from feross's wasm timidity",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "author": {
-    "name": "Feross Aboukhadijeh",
+    "name": "Feross Aboukhadijeh (with mike russo)",
     "email": "feross@feross.org",
     "url": "https://feross.org"
   },
@@ -12,13 +12,13 @@
   },
   "types": "MIDIPlayer.d.ts",
   "dependencies": {
+  },
+  "devDependencies": {
     "@rollup/plugin-alias": "^3.1.2",
     "@rollup/plugin-replace": "^2.4.1",
     "debug": "^4.1.1",
     "gravisPats": "https://github.com/miker2049/gravisPats",
-    "native-url": "^0.3.4"
-  },
-  "devDependencies": {
+    "native-url": "^0.3.4",
     "@babel/core": "^7.12.16",
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/plugin-transform-runtime": "^7.12.15",
