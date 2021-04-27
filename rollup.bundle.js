@@ -4,7 +4,7 @@ import path from 'path'
 import resolve from '@rollup/plugin-node-resolve'
 // import replace from '@rollup/plugin-replace'
 import commonjs from '@rollup/plugin-commonjs'
-import fs from 'fs'
+import { terser } from 'rollup-plugin-terser'
 
 export default [
   {
@@ -17,9 +17,6 @@ export default [
       }
     ],
     plugins: [
-      // replace({
-      //   'TIMIDITYCFG': fs.readFileSync('')
-      // }),
       resolve({
         browser: true,
         preferBuiltins: false
@@ -28,10 +25,11 @@ export default [
       babel({
         babelHelpers: 'bundled',
         configFile: path.resolve(__dirname, './.babelrc')
-      })
+      }),
+      terser()
     ]
   },
-{
+  {
     input: 'src/MIDIPlayer.js',
     output: [
       {
@@ -49,7 +47,8 @@ export default [
       babel({
         babelHelpers: 'bundled',
         configFile: path.resolve(__dirname, './.babelrc')
-      })
+      }),
+      terser()
     ]
   }
 ]

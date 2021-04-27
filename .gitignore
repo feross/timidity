@@ -8,3 +8,7 @@ node_modules/
 yarn-error.log
 package-lock.json
 *.pat
+test/*
+!test/tester.js
+!test/index.html
+.cache
