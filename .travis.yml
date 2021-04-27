@@ -1,4 +1,5 @@
 language: node_js
-submodules: false
+git:
+  submodules: false
 node_js:
   - lts/*
