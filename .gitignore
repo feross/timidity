@@ -2,3 +2,13 @@ libtimidity.debug.js
 libtimidity.debug.wasm
 libtimidity.debug.wasm.map
 node_modules/
+*.sf2
+.log/
+*.lock
+yarn-error.log
+package-lock.json
+*.pat
+test/*
+!test/tester.js
+!test/index.html
+.cache
