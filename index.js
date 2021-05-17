@@ -148,6 +148,7 @@ class Timidity extends EventEmitter {
     this._songPtr = songPtr
     this._lib._mid_song_start(this._songPtr)
     debugVerbose('Song and instruments are loaded')
+    this.emit("loaded")
   }
 
   _getMissingInstruments (songPtr, missingCount) {
@@ -256,6 +257,44 @@ class Timidity extends EventEmitter {
       this.emit('playing')
       this._startInterval()
     }
+  }
+
+  render () {
+    const songLength = this._lib._mid_song_get_total_time(this._songPtr) / 1000
+    const buffSize = songLength * SAMPLE_RATE
+    const _array = new Int16Array(BUFFER_SIZE * 2)
+    const arrays = [new Float32Array(buffSize), new Float32Array(buffSize)]
+    let sampleCount = -1
+    let lastSample = 0
+
+    while (sampleCount) {
+      const byteCount = this._lib._mid_song_read_wave(
+        this._songPtr,
+        this._bufferPtr,
+        BUFFER_SIZE * BYTES_PER_SAMPLE
+      )
+      sampleCount = byteCount / BYTES_PER_SAMPLE
+
+      if (byteCount) {
+        _array.set(
+          this._lib.HEAP16.subarray(this._bufferPtr / 2, (this._bufferPtr + byteCount) / 2)
+        )
+
+        for (let i = 0; i < sampleCount; i++) {
+          arrays[0][i + lastSample] = _array[i * 2] / 0x7FFF
+          arrays[1][i + lastSample] = _array[i * 2 + 1] / 0x7FFF
+        }
+        lastSample = lastSample + sampleCount
+        this.emit("progress", lastSample, buffSize);
+      }
+    }
+
+    // reset in case the user wants to play
+    this.seek(0)
+    this.pause()
+    this._lib._mid_song_start(this._songPtr)
+
+    return arrays;
   }
 
   _onAudioProcess (event) {

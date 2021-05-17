@@ -141,6 +141,23 @@ just call `player.pause()` to pause or `player.load()` to load a new MIDI file.
 Returns `true` if `destroy()` has been called on the player. Returns `false`
 otherwise.
 
+### `player.render()`
+
+Renders the loaded MIDI file to audio data. Returns an array of `Float32Array`s
+containing the raw left and right sample data for the entire song. The
+`render()` method should only be called once the MIDI file and soundfonts have
+been loaded:
+
+```
+player.on("loaded", function() {
+  const arrays = player.render()
+  console.log(arrays)
+})
+```
+
+Note: the uncompressed sample data can consume a lot of memory, depending on
+the length of the song.
+
 ### `player.on('error', (err) => {})`
 
 This event fires if a fatal error occurs in the player, including if a MIDI file
