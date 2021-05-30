@@ -1,6 +1,6 @@
 {
-  "name": "phaser-timidity-plugin",
-  "description": "self contained midi player with easyish patch editing, for phaser, forked from feross's wasm timidity",
+  "name": "timidity-wasm",
+  "description": "self contained midi player, forked from feross's wasm timidity",
   "version": "0.1.1",
   "author": {
     "name": "Feross Aboukhadijeh (with mike russo)",
@@ -68,8 +68,6 @@
     "build": "npm run bundle"
   },
   "standard": {
-    "ignore": [
-      "libtimidity.js"
-    ]
+    "ignore": ["libtimidity.js"]
   }
 }
