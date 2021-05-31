@@ -148,7 +148,7 @@ class Timidity extends EventEmitter {
     this._songPtr = songPtr
     this._lib._mid_song_start(this._songPtr)
     debugVerbose('Song and instruments are loaded')
-    this.emit("loaded")
+    this.emit('loaded')
   }
 
   _getMissingInstruments (songPtr, missingCount) {
@@ -285,7 +285,7 @@ class Timidity extends EventEmitter {
           arrays[1][i + lastSample] = _array[i * 2 + 1] / 0x7FFF
         }
         lastSample = lastSample + sampleCount
-        this.emit("progress", lastSample, buffSize);
+        this.emit('progress', lastSample, buffSize)
       }
     }
 
@@ -294,7 +294,7 @@ class Timidity extends EventEmitter {
     this.pause()
     this._lib._mid_song_start(this._songPtr)
 
-    return arrays;
+    return arrays
   }
 
   _onAudioProcess (event) {
