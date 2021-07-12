@@ -33,7 +33,8 @@ export default class MIDIPlayer extends EventEmitter {
       }
       // console.log(instBuffs)
       this._worklet.port.postMessage({ type: 'instPayload', buffs: instBuffs })
-    }
+    } else if (message.data==='loaded') this.emit('song-loaded')
+
   }
 
   play() {
@@ -49,18 +50,25 @@ export default class MIDIPlayer extends EventEmitter {
     this._worklet.port.postMessage({ type: 'seek', sec: sec })
   }
 
-  load(midiURL) {
-    fetchBuff(midiURL).then(buff => {
+  async load(midiURL) {
+    const buff = await fetchBuff(midiURL)
       // console.log(buff)
       this._worklet.port.postMessage({
         type: 'loadMIDI',
         midiBuff: buff
       })
-    })
+      await new Promise((res,rej)=>{
+        this.on('song-loaded',()=>res())
+        setTimeout(()=>rej('timeout on loading midi song instruments, 5000'),5000)
+      })
   }
 
   static async createMIDIPlayer(timidityCfgURL = '/gravis.cfg', acontext = new AudioContext()) {
-    await acontext.audioWorklet.addModule(`worklet-bundle.js`)
+    try {
+      await acontext.audioWorklet.addModule(`/worklet-bundle.js`)
+    } catch (err) {
+      console.log(err)
+    }
     const timidityCfg = await fetchText(timidityCfgURL)
     let baseURL = timidityCfgURL.substring(0, timidityCfgURL.lastIndexOf("/") + 1);
     if (baseURL.length === 0) baseURL = '/'

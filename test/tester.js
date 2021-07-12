@@ -39,7 +39,7 @@ function createPlayerUI(midifile, container) {
 }
 function sanitize(str) { return str.replaceAll(/[\. \/\\,\-]/ig, "") }
 
-createPlayerUI('blue.mid', '#tester-container')
+createPlayerUI('swirl.mid', '#tester-container')
 createPlayerUI('exitmusic.mid', '#tester-container')
 createPlayerUI('onemoretime.mid', '#tester-container')
 createPlayerUI('DearPrudence.mid', '#tester-container')

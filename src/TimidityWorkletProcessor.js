@@ -43,6 +43,7 @@ registerProcessor('midiplayer', class extends AudioWorkletProcessor {
       this._lib._mid_song_free(this._songPtr)
       this._songPtr = await this._loadSong(this._midiBuf)
       this._lib._mid_song_start(this._songPtr)
+      this.port.postMessage('loaded')
     } else if (message.data.type === 'loadMIDI') {
 
       // If a song already exists, destroy it before starting a new one

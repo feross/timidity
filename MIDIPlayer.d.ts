@@ -3,7 +3,7 @@ declare class MIDIPlayer {
     play(): void
     pause(): void
     seek(sec: number): void
-    load(midiURL: string): void
+    load(midiURL: string): Promise<void>
 }
 
 export = MIDIPlayer
