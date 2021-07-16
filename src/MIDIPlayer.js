@@ -63,15 +63,13 @@ export default class MIDIPlayer extends EventEmitter {
       })
   }
 
-  static async createMIDIPlayer(timidityCfgURL = '/gravis.cfg', acontext = new AudioContext()) {
+  static async createMIDIPlayer(baseURL = '/', acontext = new AudioContext()) {
     try {
-      await acontext.audioWorklet.addModule(`/worklet-bundle.js`)
+      await acontext.audioWorklet.addModule(baseURL+`worklet-bundle.js`)
     } catch (err) {
       console.log(err)
     }
-    const timidityCfg = await fetchText(timidityCfgURL)
-    let baseURL = timidityCfgURL.substring(0, timidityCfgURL.lastIndexOf("/") + 1);
-    if (baseURL.length === 0) baseURL = '/'
+    const timidityCfg = await fetchText(baseURL+"gravis.cfg" )
 
 
     const workletNode = new AudioWorkletNode(acontext, 'midiplayer', {
