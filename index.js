@@ -66,6 +66,7 @@ class Timidity extends EventEmitter {
 		this._audioContext = new AudioContext();
 
 		// Start the 'onaudioprocess' events flowing
+		// https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createScriptProcessor
 		this._node = this._audioContext.createScriptProcessor(
 			BUFFER_SIZE,
 			0,
