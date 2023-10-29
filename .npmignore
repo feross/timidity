@@ -1,8 +1,0 @@
-.travis.yml
-exports-runtime.json
-exports.json
-libtimidity.debug.js
-libtimidity.debug.wasm
-libtimidity.debug.wasm.map
-libtimidity/
-tools/

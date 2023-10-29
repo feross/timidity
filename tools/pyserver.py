@@ -10,5 +10,5 @@ Handler = http.server.SimpleHTTPRequestHandler
 Handler.extensions_map['.wasm'] = 'application/wasm'
 
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    print("serving http://0.0.0.0:"+str(PORT))
+    print("serving http://127.0.0.1:"+str(PORT))
     httpd.serve_forever()
