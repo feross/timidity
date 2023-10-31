@@ -1,14 +1,8 @@
+.cache
 node_modules/
 build/
-libtimidity.debug.js
-*.sf2
-.log/
-*.lock
 yarn-error.log
-package-lock.json
-*.pat
-test/*
-!test/tester.js
+public/*
 !test/index.html
 !test/*.mid
-.cache
+!test/*.js

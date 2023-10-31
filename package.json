@@ -1,79 +1,31 @@
 {
   "name": "timidity-wasm",
-  "description": "self contained midi player, forked from feross's wasm timidity",
+  "description": "midi player using wasm timidity",
   "version": "0.1.1",
-  "author": {
-    "name": "Feross Aboukhadijeh (with mike russo)",
-    "email": "feross@feross.org",
-    "url": "https://feross.org"
-  },
-  "bugs": {
-    "url": "https://github.com/feross/timidity/issues"
-  },
+  "author": "Feross Aboukhadijeh/mike russo/nwsw",
   "types": "MIDIPlayer.d.ts",
   "devDependencies": {
-    "@babel/core": "^7.12.16",
-    "@babel/plugin-transform-runtime": "^7.12.15",
-    "@babel/preset-env": "^7.12.16",
-    "@rollup/plugin-alias": "^3.1.2",
-    "@rollup/plugin-babel": "^5.3.0",
-    "@rollup/plugin-commonjs": "^17.1.0",
-    "@rollup/plugin-node-resolve": "^11.2.0",
-    "@rollup/plugin-replace": "^2.4.1",
-    "@rollup/plugin-terser": "^0.4.4",
-    "babel-minify": "^0.5.1",
-    "babel-plugin-static-fs": "^3.0.0",
-    "debug": "^4.1.1",
-    "eslint": "^7.20.0",
-    "eslint-config-standard": "^16.0.2",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.3.1",
+	"esbuild": "^0.19.4",
     "gravisPats": "https://github.com/miker2049/gravisPats",
-    "gzipme": "^1.0.0",
-    "native-url": "^0.3.4",
-    "rollup": "^2.39.1",
+    "gzipme": "^1.0.0"
+  },
+  "dependencies": {
+    "events": "^3.3.0",
     "url-parse": "^1.5.1"
   },
-  "homepage": "https://bitmidi.com",
-  "keywords": [
-    "api",
-    "browser",
-    "libtimidity",
-    "mid file",
-    "midi",
-    "midi api",
-    "midi file",
-    "midi player",
-    "player",
-    "soundfont",
-    "timidity",
-    "web audio",
-    "webassembly"
-  ],
   "license": "MIT",
-  "main": "dist/player-bundle.js",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/feross/timidity.git"
-  },
+  "main": "public/player-bundle.js",
   "scripts": {
     "setup-emsdk": "source ~/emsdk/emsdk_env.sh",
     "make-patches": "node ./tools/make-patch-folder.js",
-    "buildLib": "./tools/build.sh",
+    "wasmbuild": "./tools/build.sh",
     "download": "./tools/download.sh",
-    "size": "pnpm run build && cat libtimidity.wasm | gzip | wc -c && browserify -r . | minify | gzip | wc -c",
-    "test": "cd ./test/ && python3 ../tools/pyserver.py",
-    "prepTesterFolder": "cp dist/*-bundle.js test/",
-    "bundle": "rollup -c rollup.bundle.js",
-    "build": "pnpm run bundle"
+    "build": "node esbuild.mjs --build",
+	"serve": "node esbuild.mjs --serve"
   },
   "standard": {
     "ignore": [
-      "libtimidity.js"
+      "libtimidity.wasm.js"
     ]
-  },
-  "dependencies": {
-    "events": "^3.3.0"
   }
 }

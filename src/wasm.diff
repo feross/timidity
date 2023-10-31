@@ -1,0 +1,114 @@
+--- wasm/libtimidity.wasm.old.js	2023-10-31 17:07:17.118761555 -0400
++++ wasm/libtimidity.wasm.js	2023-10-31 18:45:11.171945169 -0400
+@@ -4091,6 +4091,56 @@
+   /** @export */
+   fd_write: _fd_write
+ };
++
++// include: polyfill/atob.js
++// Copied from https://github.com/strophe/strophejs/blob/e06d027/src/polyfills.js#L149
++
++// This code was written by Tyler Akins and has been placed in the
++// public domain.  It would be nice if you left this header intact.
++// Base64 code from Tyler Akins -- http://rumkin.com
++
++if (typeof atob == 'undefined') {
++	if (typeof global != 'undefined' && typeof globalThis == 'undefined') {
++	  globalThis = global;
++	}
++  
++	/**
++	 * Decodes a base64 string.
++	 * @param {string} input The string to decode.
++	 */
++	globalThis.atob = function(input) {
++	  var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
++  
++	  var output = '';
++	  var chr1, chr2, chr3;
++	  var enc1, enc2, enc3, enc4;
++	  var i = 0;
++	  // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
++	  input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
++	  do {
++		enc1 = keyStr.indexOf(input.charAt(i++));
++		enc2 = keyStr.indexOf(input.charAt(i++));
++		enc3 = keyStr.indexOf(input.charAt(i++));
++		enc4 = keyStr.indexOf(input.charAt(i++));
++  
++		chr1 = (enc1 << 2) | (enc2 >> 4);
++		chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
++		chr3 = ((enc3 & 3) << 6) | enc4;
++  
++		output = output + String.fromCharCode(chr1);
++  
++		if (enc3 !== 64) {
++		  output = output + String.fromCharCode(chr2);
++		}
++		if (enc4 !== 64) {
++		  output = output + String.fromCharCode(chr3);
++		}
++	  } while (i < input.length);
++	  return output;
++	};
++  }
++  // end include: polyfill/atob.js
++
+ var wasmExports = createWasm();
+ var ___wasm_call_ctors = createExportWrapper('__wasm_call_ctors');
+ var _malloc = Module['_malloc'] = createExportWrapper('malloc');
+@@ -4126,54 +4176,7 @@
+ // === Auto-generated postamble setup entry stuff ===
+ 
+ // include: base64Utils.js
+-// include: polyfill/atob.js
+-// Copied from https://github.com/strophe/strophejs/blob/e06d027/src/polyfills.js#L149
+-
+-// This code was written by Tyler Akins and has been placed in the
+-// public domain.  It would be nice if you left this header intact.
+-// Base64 code from Tyler Akins -- http://rumkin.com
+-
+-if (typeof atob == 'undefined') {
+-  if (typeof global != 'undefined' && typeof globalThis == 'undefined') {
+-    globalThis = global;
+-  }
+ 
+-  /**
+-   * Decodes a base64 string.
+-   * @param {string} input The string to decode.
+-   */
+-  globalThis.atob = function(input) {
+-    var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+-
+-    var output = '';
+-    var chr1, chr2, chr3;
+-    var enc1, enc2, enc3, enc4;
+-    var i = 0;
+-    // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
+-    input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
+-    do {
+-      enc1 = keyStr.indexOf(input.charAt(i++));
+-      enc2 = keyStr.indexOf(input.charAt(i++));
+-      enc3 = keyStr.indexOf(input.charAt(i++));
+-      enc4 = keyStr.indexOf(input.charAt(i++));
+-
+-      chr1 = (enc1 << 2) | (enc2 >> 4);
+-      chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+-      chr3 = ((enc3 & 3) << 6) | enc4;
+-
+-      output = output + String.fromCharCode(chr1);
+-
+-      if (enc3 !== 64) {
+-        output = output + String.fromCharCode(chr2);
+-      }
+-      if (enc4 !== 64) {
+-        output = output + String.fromCharCode(chr3);
+-      }
+-    } while (i < input.length);
+-    return output;
+-  };
+-}
+-// end include: polyfill/atob.js
+ // Converts a string of base64 into a byte array (Uint8Array).
+ function intArrayFromBase64(s) {
+ 

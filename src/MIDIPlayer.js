@@ -1,31 +1,6 @@
-// import "core-js/stable"
-import URL from 'url-parse'
 import { EventEmitter } from 'events'
 
-export function createURL(str) {
-	return new URL(str)
-}
-
-export default class MIDIPlayer extends EventEmitter {
-	static async createMIDIPlayer(baseURL = '/', acontext = new AudioContext()) {
-		try {
-			await acontext.audioWorklet.addModule(baseURL + `worklet-bundle.js`)
-		} catch (err) {
-			console.log(err)
-		}
-		const timidityCfg = await fetchText(baseURL + "gravis.cfg")
-
-		const workletNode = new AudioWorkletNode(acontext, 'midiplayer', {
-			outputChannelCount: [2],
-			processorOptions: {
-				baseURL: baseURL,
-				timidityCfg: timidityCfg
-			}
-		})
-
-		return new MIDIPlayer(workletNode, acontext, baseURL)
-	}
-
+export class MIDIPlayer extends EventEmitter {
 	constructor(worklet, context, baseURL) {
 		super()
 		this._worklet = worklet
@@ -109,4 +84,22 @@ async function _fetch(url) {
 	const response = await window.fetch(url, opts)
 	if (response.status !== 200) throw new Error(`Could not load ${url}`)
 	return response
+}
+
+export async function createMIDIPlayer(baseURL = '/', acontext = new AudioContext()) {
+	try {
+		await acontext.audioWorklet.addModule(baseURL + `TimidityWorkletProcessor.js`)
+	} catch (err) {
+		console.log(err)
+	}
+	const timidityCfg = await fetchText(baseURL + "gravis.cfg")
+	const workletNode = new AudioWorkletNode(acontext, 'midiplayer', {
+		outputChannelCount: [2],
+		processorOptions: {
+			baseURL: baseURL,
+			timidityCfg: timidityCfg
+		}
+	})
+
+	return new MIDIPlayer(workletNode, acontext, baseURL)
 }

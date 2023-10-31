@@ -1,27 +1,26 @@
-import LibTimidity from '../wasm/libtimidity'
-import URL from 'url-parse'
+import LibTimidity from '../wasm/libtimidity.wasm'
 
 const AUDIO_FORMAT = 0x8010 // format of the rendered audio 's16'
 const NUM_CHANNELS = 2 // stereo (2 channels)
 const BYTES_PER_SAMPLE = 2 * NUM_CHANNELS
 const BUFFER_SIZE = 128 // buffer size for each render() call, limited by AudioWorkletProcessor to 128 frames
 
-registerProcessor('midiplayer', TimidityPlayer);
-
-class TimidityPlayer extends AudioWorkletProcessor {
+// Reference: https://emscripten.org/docs/api_reference/wasm_audio_worklets.html
+console.log('registerProcessor start')
+registerProcessor('midiplayer', class extends AudioWorkletProcessor {
 	constructor(args) {
 		super()
-		const baseUrl = args.processorOptions.baseURL
 		const timidityCfg = args.processorOptions.timidityCfg
+		let baseUrl = args.processorOptions.baseURL
 
 		if (!baseUrl.endsWith('/')) baseUrl += '/'
-		this._baseUrl = new URL(baseUrl).href
+		this._baseUrl = baseUrl
 
 		this._songPtr = 0
 		this._bufferPtr = 0
 		this._array = new Int16Array(BUFFER_SIZE * 2)
 
-		this._lib = LibTimidity({ locateFile: (file) => new URL(file, this._baseUrl).href })
+		this._lib = LibTimidity({ locateFile: (file) => this._baseUrl + file })
 		this._lib.FS.writeFile('/timidity.cfg', timidityCfg)
 		const result = this._lib._mid_init('/timidity.cfg')
 		if (result !== 0) {
@@ -227,5 +226,6 @@ class TimidityPlayer extends AudioWorkletProcessor {
 		this._lib._mid_song_free(this._songPtr)
 		this._songPtr = 0
 	}
+})
 
-}
+console.log('registerProcessor done')
