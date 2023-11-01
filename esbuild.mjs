@@ -10,7 +10,7 @@ const bldo = {
 	format: 'esm',
 	bundle: true,
 	treeShaking: false, // essential to get wasm to work
-	minify: false,
+	minify: true,
 	sourcemap: true,
 	target: 'es2022',
 	outdir: 'public',

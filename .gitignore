@@ -3,6 +3,6 @@ node_modules/
 build/
 yarn-error.log
 public/*
-!test/index.html
-!test/*.mid
-!test/*.js
+!public/index.html
+!public/*.mid
+!public/*.js
