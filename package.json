@@ -1,7 +1,7 @@
 {
   "name": "timidity-wasm",
   "description": "midi player using wasm timidity",
-  "version": "0.1.1",
+  "version": "2.0.0",
   "author": "Feross Aboukhadijeh/mike russo/nwsw",
   "types": "MIDIPlayer.d.ts",
   "devDependencies": {
@@ -22,10 +22,5 @@
     "download": "./tools/download.sh",
     "build": "node esbuild.mjs --build",
 	"serve": "node esbuild.mjs --serve"
-  },
-  "standard": {
-    "ignore": [
-      "libtimidity.wasm.js"
-    ]
   }
 }

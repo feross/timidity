@@ -1,7 +1,5 @@
-.cache
 node_modules/
 build/
-yarn-error.log
 public/*
 !public/index.html
 !public/*.mid

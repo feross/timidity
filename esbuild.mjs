@@ -9,7 +9,7 @@ const bldo = {
 	entryPoints: ['src/TimidityWorkletProcessor.js','src/MIDIPlayer.js'],
 	format: 'esm',
 	bundle: true,
-	treeShaking: false, // essential to get wasm to work
+	treeShaking: true, // risky for wasm, but works for now
 	minify: true,
 	sourcemap: true,
 	target: 'es2022',
