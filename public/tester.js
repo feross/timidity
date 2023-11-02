@@ -1,8 +1,4 @@
-
-
-import {createMIDIPlayer} from './MIDIPlayer.js'
-// fetchText('./gravis.cfg').then((txt)=>console.log(txt))
-// console.log(createURL('./test/yeah/gravis.cfg'))
+import Player from './timidity-bundle.js'
 let acontext = false
 
 function createPlayerUI(midifile, container) {
@@ -21,7 +17,7 @@ function createPlayerUI(midifile, container) {
 `
   div.className = "test-container-" + idtag
   parent.appendChild(div)
-  createMIDIPlayer('./', acontext?acontext:(acontext = new AudioContext())).then(player => {
+  Player('./', 'gravis.cfg', acontext?acontext:(acontext = new AudioContext())).then(player => {
     console.log('done!')
 
     document.querySelector("#" + loadbuttonid).addEventListener('click', async function() {
@@ -32,7 +28,7 @@ function createPlayerUI(midifile, container) {
     })
 
     document.querySelector("#" + playbuttonid).addEventListener('click', async function() {
-      console.log(player)
+      console.log('play',player)
       player.play()
     })
   })

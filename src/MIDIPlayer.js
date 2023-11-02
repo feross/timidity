@@ -1,3 +1,4 @@
+import workerSrc from 'inline-worker:./WorkletProcessor.js'
 import { EventEmitter } from 'events'
 
 export class MIDIPlayer extends EventEmitter {
@@ -11,7 +12,6 @@ export class MIDIPlayer extends EventEmitter {
 	}
 
 	async _handleMessage(message) {
-		// console.log(message)
 		if (message.data.type === 'missingInstruments') {
 			let instBuffs = []
 			try {
@@ -23,7 +23,6 @@ export class MIDIPlayer extends EventEmitter {
 				console.log('Error loading instrument patch files')
 				console.log(err)
 			}
-			// console.log(instBuffs)
 			this._worklet.port.postMessage({ type: 'instPayload', buffs: instBuffs })
 		} else if (message.data === 'loaded') this.emit('song-loaded')
 	}
@@ -43,14 +42,13 @@ export class MIDIPlayer extends EventEmitter {
 
 	async load(midiURL) {
 		const buff = await fetchBuff(midiURL)
-		// console.log(buff)
 		this._worklet.port.postMessage({
 			type: 'loadMIDI',
 			midiBuff: buff
 		})
 		await new Promise((res, rej) => {
 			this.on('song-loaded', () => res())
-			setTimeout(() => rej('timeout on loading midi song instruments, 5000'), 5000)
+			setTimeout(() => rej('timeout on loading midi song instruments, 10000'), 10000)
 		})
 	}
 
@@ -77,23 +75,26 @@ export async function fetchText(url) {
 }
 
 async function _fetch(url) {
-	const opts = {
-		mode: 'cors',
-		credentials: 'same-origin'
-	}
-	const response = await window.fetch(url, opts)
+	const response = await window.fetch(url)
 	if (response.status !== 200) throw new Error(`Could not load ${url}`)
 	return response
 }
 
-export async function createMIDIPlayer(baseURL = '/', acontext = new AudioContext()) {
+export default async function createMIDIPlayer(baseURL = '/', cfgFile='gravis.cfg', acontext = new AudioContext()) {
+	if (!baseURL.endsWith('/')) baseURL += '/'
+
 	try {
-		await acontext.audioWorklet.addModule(baseURL + `TimidityWorkletProcessor.js`)
+		await acontext.audioWorklet.addModule(workerSrc)
 	} catch (err) {
 		console.log(err)
 	}
-	const timidityCfg = await fetchText(baseURL + "gravis.cfg")
-	const workletNode = new AudioWorkletNode(acontext, 'midiplayer', {
+
+	let timidityCfg = cfgFile
+	if (!timidityCfg.includes("\n")) {
+		timidityCfg = await fetchText(baseURL + cfgFile)
+	}
+	
+	const workletNode = new AudioWorkletNode(acontext, 'timidityplayer', {
 		outputChannelCount: [2],
 		processorOptions: {
 			baseURL: baseURL,

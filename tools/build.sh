@@ -17,10 +17,3 @@ BUILD_FLAGS="\
 "
 
 emcc -o wasm/libtimidity.wasm.js $BUILD_FLAGS libtimidity/src/*.c
-
-# fixup the atob polyfill
-patch wasm/libtimidity.wasm.js src/wasm.diff
-
-# Include the freepats config in the published package so `brfs` can inline it
-# cp node_modules/freepats/freepats.cfg freepats.cfg
-# cp patches/gravis.cfg src/gravis.cfg

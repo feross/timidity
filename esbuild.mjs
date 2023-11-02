@@ -1,15 +1,18 @@
 import {unlink} from 'fs';
 import esbuild from 'esbuild';
 import esbuild_replace from './tools/esbuild_replace.js';
+import PluginInlineWorker from './tools/esbuild_inline_worker.mjs';
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const pkg_json = require('./package.json')
 
 const bldo = {
-	entryPoints: ['src/TimidityWorkletProcessor.js','src/MIDIPlayer.js'],
+	entryPoints: [
+		{out: 'timidity-bundle', in: 'src/MIDIPlayer.js'}
+	],
 	format: 'esm',
 	bundle: true,
-	treeShaking: true, // risky for wasm, but works for now
+	treeShaking: true,
 	minify: true,
 	sourcemap: true,
 	target: 'es2022',
@@ -18,6 +21,7 @@ const bldo = {
 		'.cfg': 'text'
 	},
 	plugins: [
+		PluginInlineWorker(),
 		esbuild_replace({
 			include: /\bsrc[\/\\].+\.js$/,
 			define: {
