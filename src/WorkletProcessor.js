@@ -8,15 +8,13 @@ const BUFFER_SIZE = 128 // buffer size for each render() call, limited by AudioW
 registerProcessor('timidityplayer', class extends AudioWorkletProcessor {
 	constructor(args) {
 		super()
-		const timidityCfg = args.processorOptions.timidityCfg
-		let baseUrl = args.processorOptions.baseURL
-		this._baseUrl = baseUrl
+		const timidityCfg = args.processorOptions.config
 
 		this._songPtr = 0
 		this._bufferPtr = 0
 		this._array = new Int16Array(BUFFER_SIZE * 2)
 
-		this._lib = LibTimidity({ locateFile: (file) => this._baseUrl + file })
+		this._lib = LibTimidity()
 		this._lib.FS.writeFile('/timidity.cfg', timidityCfg)
 		const result = this._lib._mid_init('/timidity.cfg')
 		if (result !== 0) {

@@ -97,8 +97,7 @@ export default async function createMIDIPlayer(baseURL = '/', cfgFile='gravis.cf
 	const workletNode = new AudioWorkletNode(acontext, 'timidityplayer', {
 		outputChannelCount: [2],
 		processorOptions: {
-			baseURL: baseURL,
-			timidityCfg: timidityCfg
+			config: timidityCfg
 		}
 	})
 
